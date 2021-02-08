@@ -3,6 +3,7 @@ import random
 from Settings import *
 from Sprites import *
 
+
 class Game:
     def __init__(self):
         # initialize game window, etc
@@ -17,14 +18,14 @@ class Game:
         # start a new game
         self.all_sprites = pg.sprite.Group()
         self.platforms = pg.sprite.Group()
-        self.player = Player()
+        self.player = Player(self)
         self.all_sprites.add(self.player)
-        platform1 = Platform(0, screen_height - 40, screen_width, 40)
-        platform2 = Platform(100, screen_height - 200, 200, 20)
-        platform3 = Platform(200, screen_height - 100, 200, 20)
-        platform4 = Platform(300, screen_height - 350, 200, 20)
-        self.all_sprites.add(platform1, platform2, platform3, platform4)
-        self.platforms.add(platform1, platform2, platform3, platform4)
+
+        for plat in platform_list:
+            p = Platform(*plat)
+            self.all_sprites.add(p)
+            self.platforms.add(p)
+
         self.run()
 
     def run(self):
@@ -40,18 +41,27 @@ class Game:
         # Game Loop - Update
         self.all_sprites.update()
         collision = pg.sprite.spritecollide(self.player, self.platforms, False)
-        if collision:
-            self.player.position.y = collision[0].rect.top
-            self.player.velocity.y = 0
+        # Collision check
+        if self.player.velocity.y > 0:
+            if collision:
+                self.player.position.y = collision[0].rect.top
+                self.player.velocity.y = 0
+                print(self.player.position.y)
+
 
     def events(self):
         # Game Loop - events
         for event in pg.event.get():
             # check for closing window
-            if event.type == pg.QUIT:
+            if event.type == pg.QUIT or pg.key.get_pressed()[pg.K_ESCAPE]:
                 if self.playing:
                     self.playing = False
                 self.running = False
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_UP:
+                    self.player.jump()
+                if event.key == pg.K_DOWN:
+                    self.player.duck()
 
     def draw(self):
         # Game Loop - draw
