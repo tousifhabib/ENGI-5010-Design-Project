@@ -19,7 +19,7 @@ YELLOW = (255, 255, 0)
 
 # Platform position and size list
 platform_list = [
-    (0, screen_height-10, 20000, 10),
+    (0, screen_height-10, 2000, 10),
     (100, screen_height - 100, 200, 10),
     (300, screen_height - 200, 200, 10),
     (400, screen_height - 300, 200, 10),

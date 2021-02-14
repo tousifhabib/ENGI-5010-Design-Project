@@ -36,18 +36,22 @@ class Player(pg.sprite.Sprite):
         keys = pg.key.get_pressed()
         if keys[pg.K_LEFT]:
             self.acceleration.x = -player_acceleration
-            if self.velocity.x < 0:
+            if self.acceleration.x < 0:
                 while self.position.x <= (screen_width * 35) / 100:
-                    self.position.x -= int(self.velocity.x)
+                    self.position.x -= self.velocity.x
                     for plat in self.Game.platforms:
                         plat.rect.x -= int(self.velocity.x)
+                        self.position.x += 0.01
+
         if keys[pg.K_RIGHT]:
             self.acceleration.x = player_acceleration
-            if self.velocity.x > 0:
-                while self.position.x >= (screen_width * 65) / 100:
-                    self.position.x -= int(self.velocity.x)
+            if self.acceleration.x > 0:
+                while self.position.x > (screen_width * 65) / 100:
+                    self.position.x -= self.velocity.x
                     for plat in self.Game.platforms:
                         plat.rect.x -= int(self.velocity.x)
+                        self.position.x-=0.01
+
         # Apply friction
         self.acceleration.x += self.velocity.x * player_friction
         # Equations of motion

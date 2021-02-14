@@ -46,25 +46,6 @@ class Game:
             if collision:
                 self.player.position.y = collision[0].rect.top
                 self.player.velocity.y = 0
-                print(self.player.position.x)
-
-        # if self.player.velocity.x > 0:
-        #     while self.player.position.x >= (screen_width * 65) / 100 and self.player.velocity.x > 0:
-        #         self.player.position.x -= int(self.player.velocity.x)
-        #         for plat in self.platforms:
-        #             plat.rect.x -= int(self.player.velocity.x)
-
-        # if self.player.velocity.x < 0:
-        #     while self.player.position.x <= (screen_width * 35) / 100:
-        #         self.player.position.x -= int(self.player.velocity.x)
-        #         for plat in self.platforms:
-        #             plat.rect.x -= int(self.player.velocity.x)
-
-        # if self.player.velocity.x<0:
-        #     if self.player.rect.bottom <= (self.player.position.x - screen_width) / 4:
-        #         self.player.position.x -= int(self.player.velocity.x)
-        #         for plat in self.platforms:
-        #             plat.rect.x -= int(abs((self.player.velocity.x)))
 
     def events(self):
         # Game Loop - events
