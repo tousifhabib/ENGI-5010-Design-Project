@@ -6,7 +6,7 @@ FPS = 60
 
 # Player properties
 player_acceleration = 0.85
-player_friction = -0.15
+player_friction = -0.22
 player_gravity = 100
 
 # define colors
