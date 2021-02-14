@@ -48,7 +48,6 @@ class Game:
                 self.player.velocity.y = 0
                 print(self.player.position.y)
 
-
     def events(self):
         # Game Loop - events
         for event in pg.event.get():
