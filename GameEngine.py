@@ -48,17 +48,17 @@ class Game:
                 self.player.velocity.y = 0
                 print(self.player.position.x)
 
-        if self.player.velocity.x>0:
-            if self.player.rect.x >= (screen_width * 55) / 100:
-                self.player.position.x -= int(self.player.velocity.x)
-                for plat in self.platforms:
-                    plat.rect.x -= int((self.player.velocity.x))
+        # if self.player.velocity.x > 0:
+        #     while self.player.position.x >= (screen_width * 65) / 100 and self.player.velocity.x > 0:
+        #         self.player.position.x -= int(self.player.velocity.x)
+        #         for plat in self.platforms:
+        #             plat.rect.x -= int(self.player.velocity.x)
 
-        if self.player.velocity.x<0:
-            if self.player.rect.x <= (screen_width*45) / 10:
-                self.player.position.x -= int(self.player.velocity.x)
-                for plat in self.platforms:
-                    plat.rect.x -= int((self.player.velocity.x))
+        # if self.player.velocity.x < 0:
+        #     while self.player.position.x <= (screen_width * 35) / 100:
+        #         self.player.position.x -= int(self.player.velocity.x)
+        #         for plat in self.platforms:
+        #             plat.rect.x -= int(self.player.velocity.x)
 
         # if self.player.velocity.x<0:
         #     if self.player.rect.bottom <= (self.player.position.x - screen_width) / 4:
