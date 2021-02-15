@@ -29,15 +29,29 @@ class Player(pg.sprite.Sprite):
         collisionCheck = pg.sprite.spritecollide(self, self.Game.platforms, False)
         self.rect.x -= 1
         if collisionCheck and self.position.y < screen_width - 10:
-            self.position.y += 50
+            pg.time.wait(250)
+            self.position.y = (collisionCheck[0].rect.bottom + 40)
 
     def update(self):
         self.acceleration = vector(0, 0.8)
         keys = pg.key.get_pressed()
         if keys[pg.K_LEFT]:
             self.acceleration.x = -player_acceleration
+            if self.acceleration.x < 0:
+                while self.position.x <= (screen_width * 35) / 100:
+                    self.position.x -= self.velocity.x
+                    for plat in self.Game.platforms:
+                        plat.rect.x -= int(self.velocity.x)
+                        self.position.x += 0.01
+
         if keys[pg.K_RIGHT]:
             self.acceleration.x = player_acceleration
+            if self.acceleration.x > 0:
+                while self.position.x > (screen_width * 65) / 100:
+                    self.position.x -= self.velocity.x
+                    for plat in self.Game.platforms:
+                        plat.rect.x -= int(self.velocity.x)
+                        self.position.x-=0.01
 
         # Apply friction
         self.acceleration.x += self.velocity.x * player_friction
