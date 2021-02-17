@@ -3,6 +3,7 @@ TITLE = "Platformer"
 screen_width = 500
 screen_height = 500
 FPS = 60
+SPRITESHEET = "sprite.png"
 
 # Player properties
 player_acceleration = 0.85

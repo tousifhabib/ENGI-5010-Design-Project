@@ -2,6 +2,7 @@ import pygame as pg
 import random
 from Settings import *
 from Sprites import *
+from os import path
 
 
 class Game:
@@ -13,6 +14,12 @@ class Game:
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
         self.running = True
+        self.load_data()
+
+    def load_data(self):
+        self.dir = path.dirname(__file__)
+        img_dir = path.join(self.dir,'img')
+        self.spritesheet = Spritesheet(path.join(img_dir, SPRITESHEET))
 
     def new(self):
         # start a new game
