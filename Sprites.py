@@ -10,7 +10,7 @@ class Spritesheet:
     def get_image(self, x, y, width, height):
         image = pg.Surface((width, height))
         image.blit(self.spritesheet, (0, 0), (x, y, width, height))
-        image = pg.transform.scale(image, (width // 6, height // 6))
+        image = pg.transform.scale(image, (width // 6, height // 7))
         return image
 
 class Player(pg.sprite.Sprite):
@@ -61,7 +61,7 @@ class Player(pg.sprite.Sprite):
         collisionCheck = pg.sprite.spritecollide(self, self.Game.platforms, False)
         self.rect.x -= 1
         if collisionCheck and self.position.y < screen_width - 10:
-            self.position.y = collisionCheck[0].rect.bottom + 60
+            self.position.y = collisionCheck[0].rect.bottom + 55
     def update(self):
         self.animate()
         self.acceleration = vector(0, 0.8)
