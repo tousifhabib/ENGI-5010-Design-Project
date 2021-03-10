@@ -14,6 +14,7 @@ class Game:
         self.clock = pg.time.Clock()
         self.running = True
         self.load_data()
+        self.font_name = pg.font.match_font(FONT_NAME)
     def load_data(self):
         self.dir = path.dirname(__file__)
         img_dir = path.join(self.dir, "img")
@@ -73,6 +74,47 @@ class Game:
     def show_go_screen(self):
         # game over/continue
         pass
+
+    def show_start_screen(self):
+        # game splash/start screen
+        self.screen.fill(SPLASH)
+        self.draw_text(TITLE, 48, WHITE, screen_width / 2, screen_height / 4)
+        self.draw_text("Use the arrow keys to move and jump!", 22, WHITE, screen_width / 2, screen_height / 2)
+        self.draw_text("Press any key to start", 22, WHITE, screen_width / 2, screen_height * 3 / 4)
+        pg.display.flip()
+        self.wait()
+        
+
+    def show_go_screen(self):
+        # game over/continue
+        if self.player.position.y == True:
+            self.screen.fill(SPLASH)
+            self.draw_text("Game Over", 48, WHITE, screen_width / 2, screen_height / 4)
+            pg.display.flip()
+            pg.time.delay(1000)
+            self.draw_text("Press any key to try again", 22, WHITE, screen_width / 2, screen_height * 3 / 4)
+            pg.display.flip()
+            pg.event.clear()
+            self.wait()
+
+    def draw_text(self, text, size, colour, x, y):
+        #Add text to screen
+        font = pg.font.Font(self.font_name, size)
+        ScreenText = font.render(text, True, colour)
+        text_rect = ScreenText.get_rect()
+        text_rect.midtop = (x, y)
+        self.screen.blit(ScreenText, text_rect)
+
+    def wait(self):
+        waiting = True
+        while waiting:
+            self.clock.tick(FPS)
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    waiting = False
+                    self.running = False
+                elif event.type == pg.KEYUP:
+                    waiting = False
 
 game = Game()
 game.show_start_screen()
