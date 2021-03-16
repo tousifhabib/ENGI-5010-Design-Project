@@ -2,8 +2,8 @@ import pygame as pg
 import random
 from Settings import *
 from Sprites import *
-import os
-
+from os import path
+import math
 
 class Game:
     def __init__(self):
@@ -13,8 +13,21 @@ class Game:
         self.screen = pg.display.set_mode((screen_width, screen_height))
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
+        self.timer = 600
         self.running = True
+        self.load_data()
         self.font_name = pg.font.match_font(FONT_NAME)
+
+    def load_data(self):
+        self.dir = path.dirname(__file__)
+        img_dir = path.join(self.dir, "img")
+        self.spritesheet = Spritesheet(path.join(img_dir, SPRITESHEET))
+        self.background1 = pg.image.load('img/Background.jpg').convert()
+        self.background1 = pg.transform.scale(self.background1, (screen_width, screen_height))
+        self.backgroundPosition1 = vector(0, 0)
+        self.background2 = pg.image.load('img/Background.jpg').convert()
+        self.background2 = pg.transform.scale(self.background2, (screen_width, screen_height))
+        self.backgroundPosition2 = vector(screen_width, 0)
 
 
     def new(self):
@@ -36,6 +49,7 @@ class Game:
         self.playing = True
         while self.playing:
             self.clock.tick(FPS)
+            self.timer -= (1/60)
             self.events()
             self.update()
             self.draw()
@@ -49,11 +63,23 @@ class Game:
             if collision:
                 self.player.position.y = collision[0].rect.top
                 self.player.velocity.y = 0
-                print(self.player.position.y)
-        # Game Over Check
-        if self.player.position.y > screen_height:
-            self.playing = False
+        # Update background
+        if self.player.acceleration.x > 0:
+            if self.player.position.x > (screen_width * 65) / 100:
+                self.backgroundPosition1.x -= 1
+                self.backgroundPosition2.x -= 1
+                if self.backgroundPosition1.x < -screen_width:
+                    self.backgroundPosition1.x += (2*screen_width)
+                if self.backgroundPosition2.x < -screen_width:
+                    self.backgroundPosition2.x += (2*screen_width)
 
+        elif self.player.acceleration.x < 0:
+            if self.player.position.x < (screen_width * 35) / 100:
+                self.backgroundPosition1.x += 1
+                self.backgroundPosition2.x += 1
+        # Game Over Check
+        if self.player.position.y > screen_height or self.timer <= 0:
+            self.playing = False
 
     def events(self):
         # Game Loop - events
@@ -71,8 +97,13 @@ class Game:
 
     def draw(self):
         # Game Loop - draw
-        self.screen.fill(BLACK)
+        self.screen.blit(self.background1, self.backgroundPosition1)
+        self.screen.blit(self.background2, self.backgroundPosition2)  
         self.all_sprites.draw(self.screen)
+        self.draw_text(str(self.player.position.x), 12, WHITE, screen_width - 40, 20)
+        self.draw_text(str(self.backgroundPosition1.x), 12, WHITE, screen_width - 40, 40)
+        self.draw_text(str(self.backgroundPosition2.x), 12, WHITE, screen_width - 40, 60)
+        self.draw_text(str(int(self.timer)), 12, WHITE, screen_width - 40, 80)
         # *after* drawing everything, flip the display
         pg.display.flip()
 
@@ -85,15 +116,14 @@ class Game:
         pg.display.flip()
         self.wait()
         
-
     def show_go_screen(self):
         # game over/continue
         if self.running == True:
             self.screen.fill(SPLASH)
             self.draw_text("Game Over", 48, WHITE, screen_width / 2, screen_height / 4)
             pg.display.flip()
+            self.timer = 600
             pg.time.delay(1000)
-            #self.draw_text("Score: " + str(self.score), 22, WHITE, screen_width / 2, screen_height / 2)
             self.draw_text("Press any key to try again", 22, WHITE, screen_width / 2, screen_height * 3 / 4)
             pg.display.flip()
             pg.event.clear()
