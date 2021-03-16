@@ -56,12 +56,14 @@ class Player(pg.sprite.Sprite):
         self.rect.x -= 1
         if collisionCheck:
             self.velocity.y = -15
+
     def duck(self):
         self.rect.x += 1
         collisionCheck = pg.sprite.spritecollide(self, self.Game.platforms, False)
         self.rect.x -= 1
         if collisionCheck and self.position.y < screen_width - 10:
             self.position.y = collisionCheck[0].rect.bottom + 55
+
     def update(self):
         self.animate()
         self.acceleration = vector(0, 0.8)
@@ -69,7 +71,7 @@ class Player(pg.sprite.Sprite):
         if keys[pg.K_LEFT]:
             self.acceleration.x = -player_acceleration
             if self.acceleration.x < 0:
-                while self.position.x <= (screen_width * 35) / 100:
+                while self.position.x < (screen_width * 35) / 100:
                     self.position.x -= self.velocity.x
                     for plat in self.Game.platforms:
                         plat.rect.x -= int(self.velocity.x)
