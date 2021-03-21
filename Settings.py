@@ -22,7 +22,7 @@ SPLASH = (0, 155, 155)
 
 # Platform position and size list
 platform_list = [
-    (0, screen_height - 10, 5000, 10),
+    (0, screen_height - 10, 2000, 10),
     (100, screen_height - 120, 200, 10),
     (300, screen_height - 220, 200, 10),
     (400, screen_height - 320, 200, 10),
