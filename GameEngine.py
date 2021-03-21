@@ -4,7 +4,6 @@ from Settings import *
 from Sprites import *
 from os import path
 
-
 class Game:
     def __init__(self):
         # initialize game window, etc
@@ -16,12 +15,10 @@ class Game:
         self.running = True
         self.load_data()
         self.font_name = pg.font.match_font(FONT_NAME)
-
     def load_data(self):
         self.dir = path.dirname(__file__)
         img_dir = path.join(self.dir, "img")
         self.spritesheet = Spritesheet(path.join(img_dir, SPRITESHEET))
-
     def new(self):
         # start a new game
         self.all_sprites = pg.sprite.Group()
@@ -35,7 +32,6 @@ class Game:
             self.platforms.add(p)
 
         self.run()
-
     def run(self):
         # Game Loop
         self.playing = True
@@ -44,7 +40,6 @@ class Game:
             self.events()
             self.update()
             self.draw()
-
     def update(self):
         # Game Loop - Update
         self.all_sprites.update()
@@ -54,7 +49,6 @@ class Game:
             if collision:
                 self.player.position.y = collision[0].rect.top
                 self.player.velocity.y = 0
-
     def events(self):
         # Game Loop - events
         for event in pg.event.get():
@@ -68,18 +62,15 @@ class Game:
                     self.player.jump()
                 if event.key == pg.K_DOWN:
                     self.player.duck()
-
     def draw(self):
         # Game Loop - draw
         self.screen.fill(BLACK)
         self.all_sprites.draw(self.screen)
         # *after* drawing everything, flip the display
         pg.display.flip()
-
     def show_start_screen(self):
         # game splash/start screen
         pass
-
     def show_go_screen(self):
         # game over/continue
         pass
@@ -92,6 +83,7 @@ class Game:
         self.draw_text("Press any key to start", 22, WHITE, screen_width / 2, screen_height * 3 / 4)
         pg.display.flip()
         self.wait()
+        
 
     def show_go_screen(self):
         # game over/continue
@@ -106,7 +98,7 @@ class Game:
             self.wait()
 
     def draw_text(self, text, size, colour, x, y):
-        # Add text to screen
+        #Add text to screen
         font = pg.font.Font(self.font_name, size)
         ScreenText = font.render(text, True, colour)
         text_rect = ScreenText.get_rect()
@@ -123,7 +115,6 @@ class Game:
                     self.running = False
                 elif event.type == pg.KEYUP:
                     waiting = False
-
 
 game = Game()
 game.show_start_screen()

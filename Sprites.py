@@ -4,17 +4,14 @@ from Settings import *
 
 vector = pg.math.Vector2
 
-
 class Spritesheet:
     def __init__(self, filename):
         self.spritesheet = pg.image.load(filename).convert()
-
     def get_image(self, x, y, width, height):
         image = pg.Surface((width, height))
         image.blit(self.spritesheet, (0, 0), (x, y, width, height))
         image = pg.transform.scale(image, (width // 6, height // 7))
         return image
-
 
 class Player(pg.sprite.Sprite):
     def __init__(self, Game):
@@ -34,11 +31,11 @@ class Player(pg.sprite.Sprite):
         self.acceleration = vector(0, 0)
 
     def load_images(self):
-        self.idle_frames = [self.Game.spritesheet.get_image(1178, 1643, 387, 350),
-                            self.Game.spritesheet.get_image(1475, 2725, 387, 350)]
+        self.idle_frames = [self.Game.spritesheet.get_image(1178,1643,387,350),
+                            self.Game.spritesheet.get_image(1475,2725,387,350)]
         for frame in self.idle_frames:
             frame.set_colorkey(BLACK)
-        self.walking_frames_r = [self.Game.spritesheet.get_image(1092, 877, 419, 381),
+        self.walking_frames_r = [self.Game.spritesheet.get_image(1092, 877, 419, 381), 
                                  self.Game.spritesheet.get_image(1496, 384, 419, 381)]
         self.walking_frames_l = []
         for frame in self.walking_frames_r:
@@ -49,6 +46,8 @@ class Player(pg.sprite.Sprite):
                                self.Game.spritesheet.get_image(1092, 439, 402, 436)]
         for frame in self.jumping_frames:
             frame.set_colorkey(BLACK)
+        
+
 
     def jump(self):
         # jump only if standing on platform
@@ -57,14 +56,12 @@ class Player(pg.sprite.Sprite):
         self.rect.x -= 1
         if collisionCheck:
             self.velocity.y = -15
-
     def duck(self):
         self.rect.x += 1
         collisionCheck = pg.sprite.spritecollide(self, self.Game.platforms, False)
         self.rect.x -= 1
         if collisionCheck and self.position.y < screen_width - 10:
             self.position.y = collisionCheck[0].rect.bottom + 55
-
     def update(self):
         self.animate()
         self.acceleration = vector(0, 0.8)
@@ -96,7 +93,7 @@ class Player(pg.sprite.Sprite):
         self.position += self.velocity + 0.5 * self.acceleration
 
         self.rect.midbottom = self.position
-
+    
     def animate(self):
         now = pg.time.get_ticks()
         if self.velocity.x != 0:
