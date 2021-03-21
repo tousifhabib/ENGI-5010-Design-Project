@@ -1,19 +1,18 @@
 # Sprite classes for platform game
 import pygame as pg
 from Settings import *
+import random
 
 vector = pg.math.Vector2
 
 class Spritesheet:
     def __init__(self, filename):
         self.spritesheet = pg.image.load(filename).convert()
-
     def get_image(self, x, y, width, height):
         image = pg.Surface((width, height))
-        image.blit(self.spritesheet, (0,0), (x, y, width, height))
-        image = pg.transform.scale(image, (width//6, height//6))
+        image.blit(self.spritesheet, (0, 0), (x, y, width, height))
+        image = pg.transform.scale(image, (width // 6, height // 7))
         return image
-
 
 class Player(pg.sprite.Sprite):
     def __init__(self, Game):
@@ -27,18 +26,25 @@ class Player(pg.sprite.Sprite):
         self.image = self.idle_frames[0]
         self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
-        self.rect.center = (screen_width/2, screen_height/2)
-        self.position = vector(screen_width/2, screen_height/2)
+        self.rect.center = (screen_width / 2, screen_height / 2)
+        self.position = vector(screen_width / 2, screen_height / 2)
         self.velocity = vector(0, 0)
         self.acceleration = vector(0, 0)
 
     def load_images(self):
-        self.idle_frames = [self.Game.spritesheet.get_image(1178,1643,387,350),
-                            self.Game.spritesheet.get_image(1475,2725,387,350)]
+        self.idle_frames = [self.Game.spritesheet.get_image(1,1,377,410),
+                            self.Game.spritesheet.get_image(380,1,377,410),
+                            self.Game.spritesheet.get_image(759,1,377,410),
+                            self.Game.spritesheet.get_image(1138,1,377,410),
+                            self.Game.spritesheet.get_image(1517,1,377,410)]
+
         for frame in self.idle_frames:
             frame.set_colorkey(BLACK)
-        self.walking_frames_r = [self.Game.spritesheet.get_image(1092, 877, 419, 381), 
-                                 self.Game.spritesheet.get_image(1496, 384, 419, 381)]
+        self.walking_frames_r = [self.Game.spritesheet.get_image(1896,1,410,431), 
+                                 self.Game.spritesheet.get_image(2308,1,410,431),
+                                 self.Game.spritesheet.get_image(1,434,410,431),
+                                 self.Game.spritesheet.get_image(413,434,410,431),
+                                 self.Game.spritesheet.get_image(825,434,410,431)]
         self.walking_frames_l = []
         for frame in self.walking_frames_r:
             frame.set_colorkey(BLACK)
@@ -58,14 +64,12 @@ class Player(pg.sprite.Sprite):
         self.rect.x -= 1
         if collisionCheck:
             self.velocity.y = -15
-
     def duck(self):
         self.rect.x += 1
         collisionCheck = pg.sprite.spritecollide(self, self.Game.platforms, False)
         self.rect.x -= 1
         if collisionCheck and self.position.y < screen_width - 10:
-            self.position.y = (collisionCheck[0].rect.bottom + 60)
-
+            self.position.y = collisionCheck[0].rect.bottom + 55
     def update(self):
         self.animate()
         self.acceleration = vector(0, 0.8)
@@ -86,7 +90,7 @@ class Player(pg.sprite.Sprite):
                     self.position.x -= self.velocity.x
                     for plat in self.Game.platforms:
                         plat.rect.x -= int(self.velocity.x)
-                        self.position.x-=0.01
+                        self.position.x -= 0.01
 
         # Apply friction
         self.acceleration.x += self.velocity.x * player_friction
@@ -119,7 +123,7 @@ class Player(pg.sprite.Sprite):
 
         # show idle animation
         if not self.jumping and not self.walking:
-            if now - self.last_update > 350:
+            if now - self.last_update > 250:
                 self.last_update = now
                 self.current_frame = (self.current_frame + 1) % len(self.idle_frames)
                 bottom = self.rect.bottom
@@ -128,13 +132,16 @@ class Player(pg.sprite.Sprite):
                 self.rect.bottom = bottom
 
 
-
-
 class Platform(pg.sprite.Sprite):
-    def __init__(self, x, y, w, h):
+    def __init__(self,game, x, y):
         pg.sprite.Sprite.__init__(self)
-        self.image = pg.Surface((w, h))
-        self.image.fill(GREEN)
+        self.game = game
+        images = [self.game.spritesheet.get_image(2329,2166,884,246),
+                        self.game.spritesheet.get_image(1,2414,860,302),
+                        self.game.spritesheet.get_image(2329,2414,886,268)]
+        self.image = random.choice(images)
+        self.image.set_colorkey(BLACK)
+        #self.platform = pg.transform.scale(platform, (860//6, 302//6))
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
