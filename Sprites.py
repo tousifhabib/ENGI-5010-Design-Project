@@ -72,7 +72,7 @@ class Player(pg.sprite.Sprite):
         if keys[pg.K_LEFT]:
             self.acceleration.x = -player_acceleration
             if self.acceleration.x < 0:
-                while self.position.x <= (screen_width * 35) / 100:
+                while self.position.x < (screen_width * 35) / 100:
                     self.position.x -= self.velocity.x
                     for plat in self.Game.platforms:
                         plat.rect.x -= int(self.velocity.x)
