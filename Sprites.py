@@ -1,6 +1,7 @@
 # Sprite classes for platform game
 import pygame as pg
 from Settings import *
+from random import choice, randrange
 
 vector = pg.math.Vector2
 
@@ -46,8 +47,6 @@ class Player(pg.sprite.Sprite):
                                self.Game.spritesheet.get_image(1092, 439, 402, 436)]
         for frame in self.jumping_frames:
             frame.set_colorkey(BLACK)
-        
-
 
     def jump(self):
         # jump only if standing on platform
@@ -76,6 +75,8 @@ class Player(pg.sprite.Sprite):
                     for plat in self.Game.platforms:
                         plat.rect.x -= int(self.velocity.x)
                         self.position.x += 0.01
+                    for e in self.Game.enemy:
+                        e.rect.x += int(self.velocity.x)
 
         if keys[pg.K_RIGHT]:
             self.acceleration.x = player_acceleration
@@ -85,6 +86,8 @@ class Player(pg.sprite.Sprite):
                     for plat in self.Game.platforms:
                         plat.rect.x -= int(self.velocity.x)
                         self.position.x -= 0.01
+                    for e in self.Game.enemy:
+                        e.rect.x -= int(self.velocity.x)
 
         # Apply friction
         self.acceleration.x += self.velocity.x * player_friction
@@ -134,3 +137,27 @@ class Platform(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+
+class Enemy(pg.sprite.Sprite):
+    def __init__(self, x, y):
+        pg.sprite.Sprite.__init__(self)
+        self.image = pg.Surface((30, 40))
+        self.image.fill(YELLOW)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = x
+        self.rect.y = y
+        self.vx = 1
+
+        if self.rect.centerx > screen_width:
+            self.vx *= -1
+
+    def update(self):
+        self.rect.x += self.vx
+        if self.vx > 250 or self.vx<350:
+             self.vx *= -1
+        center = self.rect.center
+        self.rect = self.image.get_rect()
+        self.rect.center = center
+        self.rect.y += self.vx
+    #     if self.rect.x < self.originalX - 50:
+    #         self.speed = -(self.speed)
