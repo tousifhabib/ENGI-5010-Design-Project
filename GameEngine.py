@@ -77,6 +77,10 @@ class Game:
             if self.player.position.x < (screen_width * 35) / 100:
                 self.backgroundPosition1.x += 1
                 self.backgroundPosition2.x += 1
+                if self.backgroundPosition2.x > screen_width:
+                    self.backgroundPosition2.x -= (2*screen_width)
+                if self.backgroundPosition1.x > screen_width:
+                    self.backgroundPosition1.x += (2*screen_width)
         # Game Over Check
         if self.player.position.y > screen_height or self.timer <= 0:
             self.playing = False
