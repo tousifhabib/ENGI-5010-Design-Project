@@ -1,7 +1,7 @@
 # Sprite classes for platform game
 import pygame as pg
 from Settings import *
-import random
+from random import choice, randrange
 
 vector = pg.math.Vector2
 
@@ -9,11 +9,15 @@ class Spritesheet:
     def __init__(self, filename):
         self.spritesheet = pg.image.load(filename).convert()
     def get_image(self, x, y, width, height):
-        image = pg.Surface((width, height))
-        image.blit(self.spritesheet, (0, 0), (x, y, width, height))
-        image = pg.transform.scale(image, (width // 6, height // 7))
+        if width == 58:
+            image = pg.Surface((width, height))
+            image.blit(self.spritesheet, (0, 0), (x, y, width, height))
+            image = pg.transform.scale(image, (width//2, height//2))
+        else:
+            image = pg.Surface((width, height))
+            image.blit(self.spritesheet, (0, 0), (x, y, width, height))
+            image = pg.transform.scale(image, (width // 6, height // 7))
         return image
-
 class Player(pg.sprite.Sprite):
     def __init__(self, Game):
         pg.sprite.Sprite.__init__(self)
@@ -37,7 +41,6 @@ class Player(pg.sprite.Sprite):
                             self.Game.spritesheet.get_image(759,1,377,410),
                             self.Game.spritesheet.get_image(1138,1,377,410),
                             self.Game.spritesheet.get_image(1517,1,377,410)]
-
         for frame in self.idle_frames:
             frame.set_colorkey(BLACK)
         self.walking_frames_r = [self.Game.spritesheet.get_image(1896,1,410,431), 
@@ -54,8 +57,6 @@ class Player(pg.sprite.Sprite):
                                self.Game.spritesheet.get_image(1092, 439, 402, 436)]
         for frame in self.jumping_frames:
             frame.set_colorkey(BLACK)
-        
-
 
     def jump(self):
         # jump only if standing on platform
@@ -64,12 +65,14 @@ class Player(pg.sprite.Sprite):
         self.rect.x -= 1
         if collisionCheck:
             self.velocity.y = -15
+
     def duck(self):
         self.rect.x += 1
         collisionCheck = pg.sprite.spritecollide(self, self.Game.platforms, False)
         self.rect.x -= 1
         if collisionCheck and self.position.y < screen_width - 10:
             self.position.y = collisionCheck[0].rect.bottom + 55
+
     def update(self):
         self.animate()
         self.acceleration = vector(0, 0.8)
@@ -77,11 +80,13 @@ class Player(pg.sprite.Sprite):
         if keys[pg.K_LEFT]:
             self.acceleration.x = -player_acceleration
             if self.acceleration.x < 0:
-                while self.position.x <= (screen_width * 35) / 100:
+                while self.position.x < (screen_width * 35) / 100:
                     self.position.x -= self.velocity.x
                     for plat in self.Game.platforms:
                         plat.rect.x -= int(self.velocity.x)
                         self.position.x += 0.01
+                    for e in self.Game.enemy:
+                        e.rect.x -= int(self.velocity.x)
 
         if keys[pg.K_RIGHT]:
             self.acceleration.x = player_acceleration
@@ -91,6 +96,8 @@ class Player(pg.sprite.Sprite):
                     for plat in self.Game.platforms:
                         plat.rect.x -= int(self.velocity.x)
                         self.position.x -= 0.01
+                    for e in self.Game.enemy:
+                        e.rect.x -= int(self.velocity.x)
 
         # Apply friction
         self.acceleration.x += self.velocity.x * player_friction
@@ -123,7 +130,7 @@ class Player(pg.sprite.Sprite):
 
         # show idle animation
         if not self.jumping and not self.walking:
-            if now - self.last_update > 250:
+            if now - self.last_update > 350:
                 self.last_update = now
                 self.current_frame = (self.current_frame + 1) % len(self.idle_frames)
                 bottom = self.rect.bottom
@@ -133,15 +140,49 @@ class Player(pg.sprite.Sprite):
 
 
 class Platform(pg.sprite.Sprite):
-    def __init__(self,game, x, y):
+    def __init__(self,game, x, y, w, h):
         pg.sprite.Sprite.__init__(self)
         self.game = game
-        images = [self.game.spritesheet.get_image(2329,2166,884,246),
-                        self.game.spritesheet.get_image(1,2414,860,302),
-                        self.game.spritesheet.get_image(2329,2414,886,268)]
-        self.image = random.choice(images)
-        self.image.set_colorkey(BLACK)
-        #self.platform = pg.transform.scale(platform, (860//6, 302//6))
+        if w>860:
+            self.image = pg.Surface((w, h))
+            self.image.fill(GREEN)
+            self.rect = self.image.get_rect()
+            self.rect.x = x
+            self.rect.y = y
+        else:
+            self.image = self.game.spritesheet.get_image(1,2414,860,302)
+                            
+                            #self.game.spritesheet.get_image(2329,2166,884,246)
+                            #self.game.spritesheet.get_image(2329,2414,886,268)]
+            #self.image = random.choice(images)
+            self.image.set_colorkey(BLACK)
+            self.rect = self.image.get_rect()
+            self.rect.x = x
+            self.rect.y = y
+
+class Enemy(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.enemy
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        #self.enemy_sprite = pg.image.load('/Users/guest1/Downloads/ENGI-5010-Design-Project-2021.06-TousifHabib-AI/img/enemy.png')
+        self.image = self.game.spritesheet.get_image(3230,1,58,78)
+        #self.image = pg.Surface((30,40))
+        #self.image.fill(YELLOW)
         self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
+        self.originalX = x
+        self.rect.centerx = x
+        self.vx = 1
+        self.rect.y = screen_height-50
+        self.vy = 0
+
+    def update(self):
+        self.rect.x += self.vx
+        center = self.rect.center
+        self.rect = self.image.get_rect()
+        self.rect.center = center
+        self.rect.y += self.vy
+        if self.rect.centerx > self.originalX+ 50:
+            self.vx *= -1
+        if self.rect.centerx < self.originalX-50:
+            self.vx *= -1

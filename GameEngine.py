@@ -23,8 +23,14 @@ class Game:
         # start a new game
         self.all_sprites = pg.sprite.Group()
         self.platforms = pg.sprite.Group()
+        self.enemy = pg.sprite.Group()
         self.player = Player(self)
         self.all_sprites.add(self.player)
+
+        for e in enemy_list:
+            e = Enemy(game, *e)
+            self.all_sprites.add(e)
+            Enemy.add(e)
 
         for plat in platform_list:
             p = Platform(self, *plat)
@@ -49,6 +55,9 @@ class Game:
             if collision:
                 self.player.position.y = collision[0].rect.top
                 self.player.velocity.y = 0
+
+        enemy_collision = pg.sprite.spritecollide(self.player,self.enemy, True)
+
     def events(self):
         # Game Loop - events
         for event in pg.event.get():
