@@ -9,7 +9,11 @@ FONT_NAME = 'arial'
 # Player properties
 player_acceleration = 0.85
 player_friction = -0.22
-player_gravity = 10
+#player_gravity = 10
+
+# Enemy properties
+enemy_acceleration = 0.1
+enemy_friction = player_friction
 
 # define colors
 WHITE = (255, 255, 255)
@@ -30,6 +34,6 @@ platform_list = [
 ]
 
 enemy_list = [
-    (100, screen_height - 51),
-    (320, screen_height - 51)
+    (100, screen_height - 10),
+    (320, screen_height - 10)
 ]

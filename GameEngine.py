@@ -28,7 +28,7 @@ class Game:
         self.all_sprites.add(self.player)
 
         for e in enemy_list:
-            e = Enemy(*e)
+            e = Enemy(game, *e)
             self.all_sprites.add(e)
             Enemy.add(e)
 
@@ -55,6 +55,9 @@ class Game:
             if collision:
                 self.player.position.y = collision[0].rect.top
                 self.player.velocity.y = 0
+
+        enemy_collision = pg.sprite.spritecollide(self.player,self.enemy, True)
+
     def events(self):
         # Game Loop - events
         for event in pg.event.get():

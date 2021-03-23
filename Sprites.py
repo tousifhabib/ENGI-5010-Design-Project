@@ -76,7 +76,7 @@ class Player(pg.sprite.Sprite):
                         plat.rect.x -= int(self.velocity.x)
                         self.position.x += 0.01
                     for e in self.Game.enemy:
-                        e.rect.x += int(self.velocity.x)
+                        e.rect.x -= int(self.velocity.x)
 
         if keys[pg.K_RIGHT]:
             self.acceleration.x = player_acceleration
@@ -139,25 +139,26 @@ class Platform(pg.sprite.Sprite):
         self.rect.y = y
 
 class Enemy(pg.sprite.Sprite):
-    def __init__(self, x, y):
-        pg.sprite.Sprite.__init__(self)
-        self.image = pg.Surface((30, 40))
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.enemy
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((30,40))
         self.image.fill(YELLOW)
         self.rect = self.image.get_rect()
+        self.originalX = x
         self.rect.centerx = x
-        self.rect.y = y
         self.vx = 1
-
-        if self.rect.centerx > screen_width:
-            self.vx *= -1
+        self.rect.y = screen_height-50
+        self.vy = 0
 
     def update(self):
         self.rect.x += self.vx
-        if self.vx > 250 or self.vx<350:
-             self.vx *= -1
         center = self.rect.center
         self.rect = self.image.get_rect()
         self.rect.center = center
-        self.rect.y += self.vx
-    #     if self.rect.x < self.originalX - 50:
-    #         self.speed = -(self.speed)
+        self.rect.y += self.vy
+        if self.rect.centerx > self.originalX+ 50:
+            self.vx *= -1
+        if self.rect.centerx < self.originalX-50:
+            self.vx *= -1
