@@ -56,12 +56,14 @@ class Player(pg.sprite.Sprite):
         self.rect.x -= 1
         if collisionCheck:
             self.velocity.y = -15
+
     def duck(self):
         self.rect.x += 1
         collisionCheck = pg.sprite.spritecollide(self, self.Game.platforms, False)
         self.rect.x -= 1
         if collisionCheck and self.position.y < screen_width - 10:
             self.position.y = collisionCheck[0].rect.bottom + 55
+
     def update(self):
         self.animate()
         self.acceleration = vector(0, 0.8)
@@ -69,11 +71,15 @@ class Player(pg.sprite.Sprite):
         if keys[pg.K_LEFT]:
             self.acceleration.x = -player_acceleration
             if self.acceleration.x < 0:
-                while self.position.x <= (screen_width * 35) / 100:
+                while self.position.x < (screen_width * 35) / 100:
                     self.position.x -= self.velocity.x
                     for plat in self.Game.platforms:
                         plat.rect.x -= int(self.velocity.x)
                         self.position.x += 0.01
+                    for enemy in self.Game.enemiesA:
+                        enemy.position.x += -int(self.velocity.x)
+                    for enemy in self.Game.enemiesB:
+                        enemy.position.x += -int(self.velocity.x)
 
         if keys[pg.K_RIGHT]:
             self.acceleration.x = player_acceleration
@@ -83,6 +89,10 @@ class Player(pg.sprite.Sprite):
                     for plat in self.Game.platforms:
                         plat.rect.x -= int(self.velocity.x)
                         self.position.x -= 0.01
+                    for enemy in self.Game.enemiesA:
+                        enemy.position.x += -int(self.velocity.x)
+                    for enemy in self.Game.enemiesB:
+                        enemy.position.x += -int(self.velocity.x)
 
         # Apply friction
         self.acceleration.x += self.velocity.x * player_friction
@@ -132,3 +142,77 @@ class Platform(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+
+class enemiesA(pg.sprite.Sprite):
+    def __init__(self, x, y, Game):
+        pg.sprite.Sprite.__init__(self)
+        self.Game = Game
+        self.image = pg.Surface((15, 20))
+        self.image.fill(YELLOW)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+        self.velocity = vector(0, 0)
+        self.acceleration = vector(0, 0)
+        self.position = vector(x, y)
+
+    def update(self):
+
+        self.acceleration = vector(0, 0.8)
+        self.acceleration.x = player_acceleration / 5
+
+
+
+        # Apply friction
+        self.acceleration.x += self.velocity.x * player_friction
+        # Equations of motion
+        self.velocity += self.acceleration
+        if abs(self.velocity.x) < 0.1:
+            self.velocity.x = 0
+        self.position += self.velocity + 0.5 * self.acceleration
+
+        self.rect.midbottom = self.position
+
+class enemiesB(pg.sprite.Sprite):
+    def __init__(self, x, y, Game):
+        pg.sprite.Sprite.__init__(self)
+        self.Game = Game
+        self.image = pg.Surface((15, 20))
+        self.image.fill(BLUE)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+        self.velocity = vector(0, 0)
+        self.acceleration = vector(0, 0)
+        self.position = vector(x, y)
+        self.turntracker = 0
+        self.switchDirection = 0
+
+    def update(self):
+
+        self.acceleration = vector(0, 0)
+
+        if self.turntracker >= 200:
+            self.switchDirection = 1
+        if self.turntracker <= 0:
+            self.switchDirection = 0
+
+        if self.switchDirection == 0:
+            self.acceleration.x = player_acceleration / 3
+        else:
+            self.acceleration.x = -player_acceleration / 3
+
+
+
+        # Apply friction
+        self.acceleration.x += self.velocity.x * player_friction
+        # Equations of motion
+        self.velocity += self.acceleration
+        if abs(self.velocity.x) < 0.1:
+            self.velocity.x = 0
+        self.position += self.velocity + 0.5 * self.acceleration
+        self.turntracker += self.velocity.x + 0.5 * self.acceleration.x
+
+        self.rect.midbottom = self.position

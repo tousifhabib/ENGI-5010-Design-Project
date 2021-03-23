@@ -3,6 +3,7 @@ import random
 from Settings import *
 from Sprites import *
 from os import path
+import math
 
 class Game:
     def __init__(self):
@@ -12,17 +13,31 @@ class Game:
         self.screen = pg.display.set_mode((screen_width, screen_height))
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
+        self.timer = 600
+        self.score = 0
+        self.multiplier = 1
+        self.player_invulnerable = 0
         self.running = True
         self.load_data()
         self.font_name = pg.font.match_font(FONT_NAME)
+
     def load_data(self):
         self.dir = path.dirname(__file__)
         img_dir = path.join(self.dir, "img")
         self.spritesheet = Spritesheet(path.join(img_dir, SPRITESHEET))
+        self.background1 = pg.image.load('img/Background.jpg').convert()
+        self.background1 = pg.transform.scale(self.background1, (screen_width, screen_height))
+        self.backgroundPosition1 = vector(0, 0)
+        self.background2 = pg.image.load('img/Background.jpg').convert()
+        self.background2 = pg.transform.scale(self.background2, (screen_width, screen_height))
+        self.backgroundPosition2 = vector(screen_width, 0)
+
     def new(self):
         # start a new game
         self.all_sprites = pg.sprite.Group()
         self.platforms = pg.sprite.Group()
+        self.enemiesA = pg.sprite.Group()
+        self.enemiesB = pg.sprite.Group()
         self.player = Player(self)
         self.all_sprites.add(self.player)
 
@@ -31,24 +46,75 @@ class Game:
             self.all_sprites.add(p)
             self.platforms.add(p)
 
+        for e in enemy_listA:
+            e = enemiesA(*e, self)
+            self.all_sprites.add(e)
+            self.enemiesA.add(e)
+
+        for e in enemy_listB:
+            e = enemiesB(*e, self)
+            self.all_sprites.add(e)
+            self.enemiesB.add(e)
+
         self.run()
+
     def run(self):
         # Game Loop
         self.playing = True
         while self.playing:
             self.clock.tick(FPS)
+            if self.player_invulnerable > 0:
+                self.player_invulnerable -= 1
+            self.timer -= (1/60)
             self.events()
             self.update()
             self.draw()
+
     def update(self):
         # Game Loop - Update
         self.all_sprites.update()
+
+        # Collision with enemies
+        collision = pg.sprite.spritecollide(self.player, self.enemiesA, False)
+        if collision:
+            if self.player_invulnerable == 0:
+                if self.player.velocity.y > 1:
+                    self.player_invulnerable = 5
+                    self.player.velocity.y = -10
+                    collision[0].kill()
+                    self.score += self.multiplier*50
+                    self.multiplier *= 2
+                else:
+                    self.playing = False
+
+        collision = pg.sprite.spritecollide(self.player, self.enemiesB, False)
+        if collision:
+            if self.player_invulnerable == 0:
+                if self.player.velocity.y > 1:
+                    self.player_invulnerable = 5
+                    self.player.velocity.y = -10
+                    collision[0].kill()
+                    self.score += self.multiplier*50
+                    self.multiplier *= 2
+                else:
+                    self.playing = False
+
+        # Collisions with platforms
         collision = pg.sprite.spritecollide(self.player, self.platforms, False)
-        # Collision check
-        if self.player.velocity.y > 0:
-            if collision:
+        if collision:
+            if self.player.velocity.y > 0:
                 self.player.position.y = collision[0].rect.top
                 self.player.velocity.y = 0
+                self.multiplier = 1
+                
+        
+        for e in self.enemiesA:
+            collision = pg.sprite.spritecollide(e, self.platforms, False)
+            if e.velocity.y > 0:
+                if collision:
+                    e.position.y = collision[0].rect.top
+                    e.velocity.y = 0
+
         # Update background
         if self.player.acceleration.x > 0:
             if self.player.position.x > (screen_width * 65) / 100:
@@ -66,8 +132,7 @@ class Game:
                 if self.backgroundPosition2.x > screen_width:
                     self.backgroundPosition2.x -= (2*screen_width)
                 if self.backgroundPosition1.x > screen_width:
-                    self.backgroundPosition1.x += (2*screen_width)
-
+                    self.backgroundPosition1.x -= (2*screen_width)
         # Game Over Check
         if self.player.position.y > screen_height or self.timer <= 0:
             self.playing = False
@@ -85,18 +150,17 @@ class Game:
                     self.player.jump()
                 if event.key == pg.K_DOWN:
                     self.player.duck()
+
     def draw(self):
         # Game Loop - draw
-        self.screen.fill(BLACK)
+        self.screen.blit(self.background1, self.backgroundPosition1)
+        self.screen.blit(self.background2, self.backgroundPosition2)  
         self.all_sprites.draw(self.screen)
+        self.draw_text(str(self.score), 12, WHITE, screen_width - 40, 20)
+        self.draw_text(str(int(self.timer)), 12, WHITE, screen_width - 40, 40)
+        self.draw_text(str(int(self.player.rect.bottom)), 12, WHITE, screen_width - 40, 60)
         # *after* drawing everything, flip the display
         pg.display.flip()
-    def show_start_screen(self):
-        # game splash/start screen
-        pass
-    def show_go_screen(self):
-        # game over/continue
-        pass
 
     def show_start_screen(self):
         # game splash/start screen
@@ -107,13 +171,14 @@ class Game:
         pg.display.flip()
         self.wait()
         
-
     def show_go_screen(self):
         # game over/continue
-        if self.player.position.y == True:
+        if self.running == True:
             self.screen.fill(SPLASH)
             self.draw_text("Game Over", 48, WHITE, screen_width / 2, screen_height / 4)
             pg.display.flip()
+            self.timer = 600
+            self.score = 0
             pg.time.delay(1000)
             self.draw_text("Press any key to try again", 22, WHITE, screen_width / 2, screen_height * 3 / 4)
             pg.display.flip()
