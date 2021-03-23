@@ -27,4 +27,11 @@ platform_list = [
     (300, screen_height - 220, 200, 10),
     (400, screen_height - 320, 200, 10),
     (500, screen_height - 420, 200, 10),
+<<<<<<< HEAD
+    (750, screen_height - 220, 200, 10),
+    (1000, screen_height - 270, 150, 10),
+    (1250, screen_height - 320, 100, 10),
+    
+=======
+>>>>>>> c74eabac0ce5216f2765cc4cbf2c5b933fb5b93a
 ]

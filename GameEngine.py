@@ -29,7 +29,10 @@ class Game:
         self.background2 = pg.transform.scale(self.background2, (screen_width, screen_height))
         self.backgroundPosition2 = vector(screen_width, 0)
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> c74eabac0ce5216f2765cc4cbf2c5b933fb5b93a
     def new(self):
         # start a new game
         self.all_sprites = pg.sprite.Group()
@@ -80,7 +83,11 @@ class Game:
                 if self.backgroundPosition2.x > screen_width:
                     self.backgroundPosition2.x -= (2*screen_width)
                 if self.backgroundPosition1.x > screen_width:
+<<<<<<< HEAD
+                    self.backgroundPosition1.x -= (2*screen_width)
+=======
                     self.backgroundPosition1.x += (2*screen_width)
+>>>>>>> c74eabac0ce5216f2765cc4cbf2c5b933fb5b93a
         # Game Over Check
         if self.player.position.y > screen_height or self.timer <= 0:
             self.playing = False
