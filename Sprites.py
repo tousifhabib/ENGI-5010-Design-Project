@@ -1,6 +1,7 @@
 # Sprite classes for platform game
 import pygame as pg
 from Settings import *
+import random
 
 vector = pg.math.Vector2
 
@@ -31,12 +32,19 @@ class Player(pg.sprite.Sprite):
         self.acceleration = vector(0, 0)
 
     def load_images(self):
-        self.idle_frames = [self.Game.spritesheet.get_image(1178,1643,387,350),
-                            self.Game.spritesheet.get_image(1475,2725,387,350)]
+        self.idle_frames = [self.Game.spritesheet.get_image(1,1,377,410),
+                            self.Game.spritesheet.get_image(380,1,377,410),
+                            self.Game.spritesheet.get_image(759,1,377,410),
+                            self.Game.spritesheet.get_image(1138,1,377,410),
+                            self.Game.spritesheet.get_image(1517,1,377,410)]
+
         for frame in self.idle_frames:
             frame.set_colorkey(BLACK)
-        self.walking_frames_r = [self.Game.spritesheet.get_image(1092, 877, 419, 381), 
-                                 self.Game.spritesheet.get_image(1496, 384, 419, 381)]
+        self.walking_frames_r = [self.Game.spritesheet.get_image(1896,1,410,431), 
+                                 self.Game.spritesheet.get_image(2308,1,410,431),
+                                 self.Game.spritesheet.get_image(1,434,410,431),
+                                 self.Game.spritesheet.get_image(413,434,410,431),
+                                 self.Game.spritesheet.get_image(825,434,410,431)]
         self.walking_frames_l = []
         for frame in self.walking_frames_r:
             frame.set_colorkey(BLACK)
@@ -62,7 +70,7 @@ class Player(pg.sprite.Sprite):
         collisionCheck = pg.sprite.spritecollide(self, self.Game.platforms, False)
         self.rect.x -= 1
         if collisionCheck and self.position.y < screen_width - 10:
-            self.position.y = collisionCheck[0].rect.bottom + 55
+            self.position.y = collisionCheck[0].rect.bottom + 60
 
     def update(self):
         self.animate()
@@ -135,10 +143,12 @@ class Player(pg.sprite.Sprite):
 
 
 class Platform(pg.sprite.Sprite):
-    def __init__(self, x, y, w, h):
+    def __init__(self, game, x, y):
         pg.sprite.Sprite.__init__(self)
-        self.image = pg.Surface((w, h))
-        self.image.fill(GREEN)
+        self.game = game
+        self.image = self.game.spritesheet.get_image(1,2414,860,302)
+        self.image = pg.transform.scale(self.image, (200, 20))
+        self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -147,8 +157,9 @@ class enemiesA(pg.sprite.Sprite):
     def __init__(self, x, y, Game):
         pg.sprite.Sprite.__init__(self)
         self.Game = Game
-        self.image = pg.Surface((15, 20))
-        self.image.fill(YELLOW)
+        self.image = pg.image.load('img/LittleBadGuy.png').convert()
+        self.image = pg.transform.scale(self.image, (40, 40))
+        self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y

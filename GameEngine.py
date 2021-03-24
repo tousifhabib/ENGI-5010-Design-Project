@@ -42,7 +42,7 @@ class Game:
         self.all_sprites.add(self.player)
 
         for plat in platform_list:
-            p = Platform(*plat)
+            p = Platform(self, *plat)
             self.all_sprites.add(p)
             self.platforms.add(p)
 
