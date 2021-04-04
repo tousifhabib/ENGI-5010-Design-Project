@@ -158,7 +158,7 @@ class enemiesA(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self)
         self.Game = Game
         self.image = pg.image.load('img/LittleBadGuy.png').convert()
-        self.image = pg.transform.scale(self.image, (40, 40))
+        self.image = pg.transform.scale(self.image, (50, 40))
         self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         self.rect.x = x
