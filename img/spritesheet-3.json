@@ -797,6 +797,27 @@
 				"w": 886,
 				"h": 268
 			}
+		},
+		{
+			"filename": "enemy.png",
+			"frame": {
+				"x": 3230,
+				"y": 1,
+				"w": 58,
+				"h": 78
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 58,
+				"h": 78
+			},
+			"sourceSize": {
+				"w": 58,
+				"h": 78
+			}
 		}
 	],
 	"meta": {
