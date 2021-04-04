@@ -21,6 +21,7 @@ class Player(pg.sprite.Sprite):
         self.walking = False
         self.jumping = False
         self.attacking = False
+        self.check_attack = 0
         self.current_frame = 0
         self.last_update = 0
         self.direction = 1
@@ -74,6 +75,13 @@ class Player(pg.sprite.Sprite):
         for frame in self.die_frames_r:
             frame.set_colorkey(BLACK)
             self.die_frames_l.append(pg.transform.flip(frame, True, False))
+
+        self.attack_frames_l = []
+        self.attack_frames_r = [self.Game.spritesheet.get_image(395,1381,652,476),
+                                self.Game.spritesheet.get_image(1,1859,652,476)]
+        for frame in self.attack_frames_r:
+            frame.set_colorkey(BLACK)
+            self.attack_frames_l.append(pg.transform.flip(frame, True, False))
         
 
 
@@ -96,22 +104,6 @@ class Player(pg.sprite.Sprite):
         self.bullet = Bullet(self.direction, self.rect.midtop, self.rect.top)
         self.Game.all_sprites.add(self.bullet)
         self.Game.bullets.add(self.bullet)
-
-    def attack(self):        
-      # If attack frame has reached end of sequence, return to base frame      
-      if self.attack_frame > 10:
-            self.attack_frame = 0
-            self.attacking = False
- 
-      # Check direction for correct animation to display  
-      if self.direction == "RIGHT":
-             self.image = attack_ani_R[self.attack_frame]
-      elif self.direction == "LEFT":
-             self.correction()
-             self.image = attack_ani_L[self.attack_frame] 
- 
-      # Update the current attack frame  
-      self.attack_frame += 1
 
     def update(self):
         self.animate()
@@ -159,12 +151,25 @@ class Player(pg.sprite.Sprite):
         now = pg.time.get_ticks()
         if self.velocity.x != 0:
             self.walking = True
+            self.check_attack = 0
         else:
             self.walking = False
         if self.velocity.y != 0:
             self.jumping = True
+            self.check_attack = 0
         else:
             self.jumping = False
+
+        if pg.key.get_pressed()[pg.K_SPACE]:
+            if self.check_attack == 0:
+                self.attacking = True
+                self.check_attack = 1
+            else:
+                self.attacking = False
+        else:
+            self.attacking = False
+
+        
         # show walk animation
         if self.walking:
             if now - self.last_update > 180:
@@ -208,6 +213,18 @@ class Player(pg.sprite.Sprite):
                 self.rect = self.image.get_rect()
                 self.rect.bottom = bottom
         self.mask = pg.mask.from_surface(self.image)
+
+        if self.attacking:
+            if now - self.last_update > 50:
+                self.last_update = now
+                self.current_frame = (self.current_frame + 1) % len(self.attack_frames_r)
+                bottom = self.rect.bottom
+                if self.direction == 1:
+                    self.image = self.attack_frames_r[self.current_frame]
+                else:
+                    self.image = self.attack_frames_l[self.current_frame]
+                self.rect = self.image.get_rect()
+                self.rect.bottom = bottom
 
 
     def kill_animation(self):

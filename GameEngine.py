@@ -87,8 +87,7 @@ class Game:
                     self.multiplier *= 2
                 else:
                     self.playing = False
-                    #self.player.kill_animation()
-                    #self.image = self.player.dead
+                    
 
         collision = pg.sprite.spritecollide(self.player, self.enemiesB, False)
         if collision:
@@ -101,7 +100,6 @@ class Game:
                     self.multiplier *= 2
                 else:
                     self.playing = False
-                    #self.player.kill_animation()
 
         # Collisions with platforms
         collision = pg.sprite.spritecollide(self.player, self.platforms, False)
@@ -118,9 +116,15 @@ class Game:
                 if collision:
                     e.position.y = collision[0].rect.top
                     e.velocity.y = 0
-
+        #player bullets collision with enemies
         hits = pg.sprite.groupcollide(self.enemiesA, self.bullets, True, True)
+        if hits:
+            self.score += self.multiplier*50
+            self.multiplier *= 2
         hits = pg.sprite.groupcollide(self.enemiesB, self.bullets, True, True)
+        if hits:
+            self.score += self.multiplier*50
+            self.multiplier *= 2
 
 
         # Update background
@@ -160,6 +164,10 @@ class Game:
                     self.player.duck()
                 if event.key == pg.K_SPACE:
                     self.player.shoot()
+            if event.type == pg.KEYUP:
+                if event.key == pg.K_SPACE:
+                    self.player.check_attack = 0
+            
 
     def draw(self):
         # Game Loop - draw
@@ -218,7 +226,6 @@ game = Game()
 game.show_start_screen()
 while game.running:
     game.new() 
-    #pg.time.delay(1000)
     game.player.kill_animation()           
     game.show_go_screen()
 
