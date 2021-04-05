@@ -104,20 +104,11 @@ class Player(pg.sprite.Sprite):
         ]
 
 
-
     def jump(self):
-        now = pg.time.get_ticks()
         self.rect.y += 1
         collision = pg.sprite.spritecollide(self, self.game.walls, False)
         self.rect.y -= 1
         if collision:
-            if now - self.last_update > 50:
-                self.last_update = now
-                self.current_frame = (self.current_frame + 1) % len(jumping_frames_R)
-                bottom = self.rect.bottom
-                self.image = jumping_frames_R[self.current_frame]
-                self.rect = self.image.get_rect()
-                self.rect.bottom = bottom
             self.vel.y = -15
     
     def EnemyCollision(self):
@@ -182,14 +173,14 @@ class Player(pg.sprite.Sprite):
                 self.rect = self.image.get_rect()
                 self.rect.bottom = bottom
 
-        #if keys[pg.K_SPACE]:
-            #if now - self.last_update > 350:
-                #self.last_update = now
-                #self.current_frame = (self.current_frame + 1) % len(self.single_arrow)
-                #bottom = self.rect.bottom
-                #self.image = self.single_arrow[self.current_frame]
-                #self.rect = self.image.get_rect()
-                #self.rect.bottom = bottom
+        if keys[pg.K_SPACE]:
+            if now - self.last_update > 350:
+                self.last_update = now
+                self.current_frame = (self.current_frame + 1) % len(self.single_arrow)
+                bottom = self.rect.bottom
+                self.image = self.single_arrow[self.current_frame]
+                self.rect = self.image.get_rect()
+                self.rect.bottom = bottom
 
         if now - self.last_update > 450:
             self.last_update = now
@@ -358,9 +349,6 @@ class enemiesA(pg.sprite.Sprite):
                 self.image = self.moving_right[self.current_frame]
                 self.rect = self.image.get_rect()
                 self.rect.bottom = bottom
-
-
-
 
         # Apply friction
         self.acc.x += self.vel.x * Player_Friction
