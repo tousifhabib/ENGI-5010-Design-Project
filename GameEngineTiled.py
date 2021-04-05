@@ -46,6 +46,7 @@ class Game:
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.enemiesA = pg.sprite.Group()
+        self.enemiesB = pg.sprite.Group()
         self.enemy_walls = pg.sprite.Group()
         self.arrows = pg.sprite.Group()
         #for row, tiles in enumerate(self.Map.Map):
@@ -62,6 +63,8 @@ class Game:
                 Obstacle(self, 2*obj.x, 2*obj.y, 2*obj.width, 2*obj.height)
             if obj.name == 'EnemyA':
                 enemiesA(self, 2*obj.x, 2*obj.y)
+            if obj.name == 'EnemyB':
+                enemiesB(self, 2*obj.x, 2*obj.y)
             if obj.name == 'Enemy Wall':
                 Enemy_Obstacle(self, 2*obj.x, 2*obj.y, 2*obj.width, 2*obj.height)
 

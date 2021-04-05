@@ -303,7 +303,6 @@ class enemiesA(pg.sprite.Sprite):
         for image in self.moving_right:
             image.set_colorkey(black)
 
-
     def EnemyCollision(self):
         collision = pg.sprite.spritecollide(self, self.game.enemiesA, False)
         if collision:
@@ -378,6 +377,47 @@ class enemiesA(pg.sprite.Sprite):
         self.WallCollision('y')
 
         self.EnemyCollision()
+
+class enemiesB(pg.sprite.Sprite):
+    def __init__(self, x, y, Game):
+        pg.sprite.Sprite.__init__(self)
+        self.Game = Game
+        self.image = pg.surface.fill(red)
+        self.image = pg.transform.scale(self.image, (40, 40))
+        self.image.set_colorkey(red)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+        self.velocity = vector(0, 0)
+        self.acceleration = vector(0, 0)
+        self.position = vector(x, y)
+        self.turntracker = 0
+        self.switchDirection = 0
+
+    def update(self):
+        self.acceleration = vector(0, 0)
+        if self.turntracker >= 200:
+            self.switchDirection = 1
+        if self.turntracker <= 0:
+            self.switchDirection = 0
+
+        if self.switchDirection == 0:
+            self.acceleration.x = player_acceleration / 3
+        else:
+            self.acceleration.x = -player_acceleration / 3
+
+        # Apply friction
+        self.acceleration.x += self.velocity.x * player_friction
+        # Equations of motion
+        self.velocity += self.acceleration
+        if abs(self.velocity.x) < 0.1:
+            self.velocity.x = 0
+        self.position += self.velocity + 0.5 * self.acceleration
+        self.turntracker += self.velocity.x + 0.5 * self.acceleration.x
+
+        self.rect.midbottom = self.position
+
 
 class Arrow(pg.sprite.Sprite):
     def __init__(self, player, x, y):
