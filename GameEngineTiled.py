@@ -131,7 +131,8 @@ class Game:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_UP:
                     self.player.jump()
-            
+                if event.key == pg.K_SPACE:
+                    self.player.shoot()
 
     def show_start_screen(self):
         self.start = pg.image.load('Pixel Art Trees/FreeCuteTileset/Mockup2x.png')
