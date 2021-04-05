@@ -16,6 +16,7 @@ class Game:
         self.timer = 100
         self.score = 0
         self.multiplier = 1
+        self.victory = False
         self.font_name = pg.font.match_font(FONT)
         self.load_data()
 
@@ -48,12 +49,6 @@ class Game:
         self.enemiesA = pg.sprite.Group()
         self.enemy_walls = pg.sprite.Group()
         self.arrows = pg.sprite.Group()
-        #for row, tiles in enumerate(self.Map.Map):
-            #for col, tile in enumerate(tiles):
-                #if tile == '1':
-                    #Wall(self, col, row)
-                #if tile == 'P':
-                    #self.player = Player(self, col, row)
         
         for obj in self.Map.tmxdata.objects:
             if obj.name == 'Player':
@@ -74,6 +69,7 @@ class Game:
         self.playing = True
         while self.playing:
             self.dt = self.clock.tick(FPS) / 1000
+            self.timer -= (1/FPS)
             self.events()
             self.update()
             self.draw()
@@ -87,6 +83,11 @@ class Game:
         self.all_sprites.update()
         self.camera.update(self.player)
         if self.player.pos.y > HEIGHT:
+            self.playing = False
+        if self.timer <= 0:
+            self.playing = False
+        if self.player.pos.x > 10000:
+            self.victory = True
             self.playing = False
 
     def draw_grid(self):
@@ -105,6 +106,10 @@ class Game:
         self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
         for s in self.all_sprites:
             self.screen.blit(s.image, self.camera.apply(s))
+        self.draw_text(str(self.score), 12, black, WIDTH - 20, 0)
+        self.draw_text(str(int(self.timer)), 12, black, WIDTH - 20, 15)
+        self.draw_text(str(int(self.player.pos.x)), 12, black, WIDTH - 20, 30)
+
         pg.display.flip()
     
     def draw_text(self, text, size, colour, x, y):
@@ -120,23 +125,18 @@ class Game:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.quit()
-
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_UP:
                     self.player.jump()
-
-                if event.key == pg.K_SPACE:
-                    self.player.shoot()
-
             
 
     def show_start_screen(self):
         self.start = pg.image.load('Pixel Art Trees/FreeCuteTileset/Mockup2x.png')
         self.start = pg.transform.scale(self.start, (640, 384))
         self.screen.blit(self.start, (0, 0))
-        self.draw_text(TITLE, 48, black, WIDTH / 2, HEIGHT / 4)
-        self.draw_text("Use the arrow keys to move and jump!", 22, black, WIDTH / 2, HEIGHT / 2)
-        self.draw_text("Press any key to start", 22, black, WIDTH / 2, HEIGHT * 3 / 4)
+        self.draw_text(TITLE, 48, red, WIDTH / 2, HEIGHT / 4)
+        self.draw_text("Use the arrow keys to move and jump!", 22, red, WIDTH / 2, HEIGHT / 2)
+        self.draw_text("Press any key to start", 22, red, WIDTH / 2, HEIGHT * 3 / 4)
         pg.display.flip()
         self.wait()
 

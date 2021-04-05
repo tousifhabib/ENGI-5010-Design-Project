@@ -26,4 +26,4 @@ GRIDHEIGHT = HEIGHT / tilesize
 #Player Settings
 Player_Gravity = 0.8
 Player_Acceleration = 1
-Player_Friction = -0.2
+Player_Friction = -0.3
