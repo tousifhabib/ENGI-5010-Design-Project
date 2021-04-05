@@ -83,25 +83,13 @@ class Player(pg.sprite.Sprite):
             pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(408, 11, 28, 42), (42, 63)),
             pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(472, 11, 25, 42), (38, 63)),
             pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(24, 75, 25, 42), (38, 63)),
+            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(88, 75, 25, 42), (38, 63)),
+            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(1152, 80, 27, 37), (41, 56)),
         ]
         for image in self.single_arrow:
             image.set_colorkey(black)
 
-        self.held_arrow = [
-            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(24, 203, 25, 42), (38, 42)),
-            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(88, 198, 25, 47), (38, 47)),
-            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(152, 203, 33, 42), (50, 42)),
-            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(216, 203, 28, 42), (42, 42)),
-            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(280, 203, 25, 42), (38, 42)),
-            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(344, 203, 25, 42), (38, 42)),
-        ]
-        for image in self.held_arrow:
-            image.set_colorkey(black)
 
-        self.end_arrow = [
-            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(88, 75, 25, 42), (38, 63)),
-            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(1152, 80, 27, 37), (41, 56)),
-        ]
 
 
     def jump(self):
@@ -110,8 +98,7 @@ class Player(pg.sprite.Sprite):
         self.rect.y -= 1
         if collision:
             self.vel.y = -15
-
-
+    
     def EnemyCollision(self):
         collision = pg.sprite.spritecollide(self, self.game.enemiesA, False)
         if collision:
@@ -161,10 +148,11 @@ class Player(pg.sprite.Sprite):
         self.acc.y = Player_Gravity
         
         keys = pg.key.get_pressed()
+
         if keys[pg.K_LEFT]:
             self.acc.x = -Player_Acceleration
             self.direction = "Left"
-            if now - self.last_update > 350:
+            if now - self.last_update > 100:
                 self.last_update = now
                 self.current_frame = (self.current_frame + 1) % len(self.moving_left)
                 bottom = self.rect.bottom
@@ -175,7 +163,7 @@ class Player(pg.sprite.Sprite):
         if keys[pg.K_RIGHT]:
             self.acc.x = Player_Acceleration
             self.direction = "Right"
-            if now - self.last_update > 350:
+            if now - self.last_update > 100:
                 self.last_update = now
                 self.current_frame = (self.current_frame + 1) % len(self.moving_right)
                 bottom = self.rect.bottom
@@ -184,7 +172,7 @@ class Player(pg.sprite.Sprite):
                 self.rect.bottom = bottom
 
         if keys[pg.K_SPACE]:
-            if now - self.last_update > 350:
+            if now - self.last_update > 100:
                 self.last_update = now
                 self.current_frame = (self.current_frame + 1) % len(self.single_arrow)
                 bottom = self.rect.bottom
@@ -192,20 +180,21 @@ class Player(pg.sprite.Sprite):
                 self.rect = self.image.get_rect()
                 self.rect.bottom = bottom
 
-        if now - self.last_update > 450:
-            self.last_update = now
-            if self.direction == "Right":
-                    self.current_frame = (self.current_frame + 1) % len(self.idle_right)
+        else: 
+            if now - self.last_update > 250:
+                self.last_update = now
+                if self.direction == "Right":
+                        self.current_frame = (self.current_frame + 1) % len(self.idle_right)
+                        bottom = self.rect.bottom
+                        self.image = self.idle_right[self.current_frame]
+                        self.rect = self.image.get_rect()
+                        self.rect.bottom = bottom
+                else:
+                    self.current_frame = (self.current_frame + 1) % len(self.idle_left)
                     bottom = self.rect.bottom
-                    self.image = self.idle_right[self.current_frame]
+                    self.image = self.idle_left[self.current_frame]
                     self.rect = self.image.get_rect()
                     self.rect.bottom = bottom
-            else:
-                self.current_frame = (self.current_frame + 1) % len(self.idle_left)
-                bottom = self.rect.bottom
-                self.image = self.idle_left[self.current_frame]
-                self.rect = self.image.get_rect()
-                self.rect.bottom = bottom
 
 
 
@@ -226,7 +215,6 @@ class Player(pg.sprite.Sprite):
 
         self.EnemyCollision()
         self.ShootCollide()
-
 
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -360,6 +348,9 @@ class enemiesA(pg.sprite.Sprite):
                 self.image = self.moving_right[self.current_frame]
                 self.rect = self.image.get_rect()
                 self.rect.bottom = bottom
+
+
+
 
         # Apply friction
         self.acc.x += self.vel.x * Player_Friction
