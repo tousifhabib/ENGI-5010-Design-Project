@@ -120,9 +120,14 @@ class Game:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.quit()
+
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_UP:
                     self.player.jump()
+
+                if event.key == pg.K_SPACE:
+                    self.player.shoot()
+
             
 
     def show_start_screen(self):

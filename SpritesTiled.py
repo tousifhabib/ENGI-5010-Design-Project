@@ -110,7 +110,8 @@ class Player(pg.sprite.Sprite):
         self.rect.y -= 1
         if collision:
             self.vel.y = -15
-    
+
+
     def EnemyCollision(self):
         collision = pg.sprite.spritecollide(self, self.game.enemiesA, False)
         if collision:
@@ -144,6 +145,15 @@ class Player(pg.sprite.Sprite):
                 self.acc.y = 0
                 self.rect.y = self.pos.y
                 self.game.multiplier = 1
+
+    def shoot(self):
+        self.arrow = Arrow(self, self.rect.midtop, self.rect.bottom)
+        self.game.all_sprites.add(self.arrow)
+        self.game.arrows.add(self.arrow)
+
+    def ShootCollide(self):
+        pg.sprite.groupcollide(self.game.arrows, self.game.enemiesA, True, True)
+        pg.sprite.groupcollide(self.game.arrows, self.game.walls, True, False)
 
     def update(self):
         now = pg.time.get_ticks()
@@ -215,6 +225,8 @@ class Player(pg.sprite.Sprite):
         self.WallCollision('y')
 
         self.EnemyCollision()
+        self.ShootCollide()
+
 
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -368,15 +380,26 @@ class enemiesA(pg.sprite.Sprite):
         self.EnemyCollision()
 
 class Arrow(pg.sprite.Sprite):
-    def __init__(self, game, x, y):
-        self.groups = game.arrows, game.all_sprites
-        pg.sprite.Sprite.__init__(self, self.groups)
-        self.game = game
-        self.current_frame = 0
-        self.last_update = 0
-        self.load_images()
-        self.image = pg.Rect(x, y, 5, 2)
-        self.image.fill(red)
+    def __init__(self, player, x, y):
+        pg.sprite.Sprite.__init__(self)
+        self.direction = player.direction
+
+        self.image = pg.image.load('Pixel Art Trees\Archer\Arrow.png').convert()
+        self.image = pg.transform.scale(self.image, (20, 10))
+        self.image.set_colorkey(black)
         self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
+        self.rect.bottom = y
+        self.rect.midtop = x
+        self.speed_x = 5
+        self.speed_y = 1
+
+    def update(self):
+        if self.direction == "Right":
+            self.rect.y += self.speed_y
+            self.rect.x += self.speed_x
+        else:
+            self.rect.y += self.speed_y
+            self.rect.x -= self.speed_x
+        # kill if it moves off the top of the screen
+        if self.rect.bottom > HEIGHT:
+            self.kill()

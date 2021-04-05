@@ -60,19 +60,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3177c90e-0503-40ed-9a4b-8c795b39d906" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BG1.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BG2.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BG3.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/GameEngine.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/GameEngineTiled.py" beforeDir="false" afterPath="$PROJECT_DIR$/GameEngineTiled.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Readme.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Settings.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SettingsTiled.py" beforeDir="false" afterPath="$PROJECT_DIR$/SettingsTiled.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Sprites.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/SpritesTiled.py" beforeDir="false" afterPath="$PROJECT_DIR$/SpritesTiled.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/sprite.xml" beforeDir="false" afterPath="$PROJECT_DIR$/img/sprite.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
