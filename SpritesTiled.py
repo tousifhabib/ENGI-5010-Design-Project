@@ -83,25 +83,13 @@ class Player(pg.sprite.Sprite):
             pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(408, 11, 28, 42), (42, 63)),
             pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(472, 11, 25, 42), (38, 63)),
             pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(24, 75, 25, 42), (38, 63)),
+            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(88, 75, 25, 42), (38, 63)),
+            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(1152, 80, 27, 37), (41, 56)),
         ]
         for image in self.single_arrow:
             image.set_colorkey(black)
 
-        self.held_arrow = [
-            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(24, 203, 25, 42), (38, 42)),
-            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(88, 198, 25, 47), (38, 47)),
-            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(152, 203, 33, 42), (50, 42)),
-            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(216, 203, 28, 42), (42, 42)),
-            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(280, 203, 25, 42), (38, 42)),
-            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(344, 203, 25, 42), (38, 42)),
-        ]
-        for image in self.held_arrow:
-            image.set_colorkey(black)
 
-        self.end_arrow = [
-            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(88, 75, 25, 42), (38, 63)),
-            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(1152, 80, 27, 37), (41, 56)),
-        ]
 
 
     def jump(self):
@@ -110,8 +98,7 @@ class Player(pg.sprite.Sprite):
         self.rect.y -= 1
         if collision:
             self.vel.y = -15
-
-
+    
     def EnemyCollision(self):
         collision = pg.sprite.spritecollide(self, self.game.enemiesA, False)
         if collision:
@@ -146,25 +133,17 @@ class Player(pg.sprite.Sprite):
                 self.rect.y = self.pos.y
                 self.game.multiplier = 1
 
-    def shoot(self):
-        self.arrow = Arrow(self, self.rect.midtop, self.rect.bottom)
-        self.game.all_sprites.add(self.arrow)
-        self.game.arrows.add(self.arrow)
-
-    def ShootCollide(self):
-        pg.sprite.groupcollide(self.game.arrows, self.game.enemiesA, True, True)
-        pg.sprite.groupcollide(self.game.arrows, self.game.walls, True, False)
-
     def update(self):
         now = pg.time.get_ticks()
         self.acc.x = 0
         self.acc.y = Player_Gravity
         
         keys = pg.key.get_pressed()
+
         if keys[pg.K_LEFT]:
             self.acc.x = -Player_Acceleration
             self.direction = "Left"
-            if now - self.last_update > 350:
+            if now - self.last_update > 100:
                 self.last_update = now
                 self.current_frame = (self.current_frame + 1) % len(self.moving_left)
                 bottom = self.rect.bottom
@@ -175,7 +154,7 @@ class Player(pg.sprite.Sprite):
         if keys[pg.K_RIGHT]:
             self.acc.x = Player_Acceleration
             self.direction = "Right"
-            if now - self.last_update > 350:
+            if now - self.last_update > 100:
                 self.last_update = now
                 self.current_frame = (self.current_frame + 1) % len(self.moving_right)
                 bottom = self.rect.bottom
@@ -184,7 +163,7 @@ class Player(pg.sprite.Sprite):
                 self.rect.bottom = bottom
 
         if keys[pg.K_SPACE]:
-            if now - self.last_update > 350:
+            if now - self.last_update > 100:
                 self.last_update = now
                 self.current_frame = (self.current_frame + 1) % len(self.single_arrow)
                 bottom = self.rect.bottom
@@ -192,20 +171,21 @@ class Player(pg.sprite.Sprite):
                 self.rect = self.image.get_rect()
                 self.rect.bottom = bottom
 
-        if now - self.last_update > 450:
-            self.last_update = now
-            if self.direction == "Right":
-                    self.current_frame = (self.current_frame + 1) % len(self.idle_right)
+        else: 
+            if now - self.last_update > 250:
+                self.last_update = now
+                if self.direction == "Right":
+                        self.current_frame = (self.current_frame + 1) % len(self.idle_right)
+                        bottom = self.rect.bottom
+                        self.image = self.idle_right[self.current_frame]
+                        self.rect = self.image.get_rect()
+                        self.rect.bottom = bottom
+                else:
+                    self.current_frame = (self.current_frame + 1) % len(self.idle_left)
                     bottom = self.rect.bottom
-                    self.image = self.idle_right[self.current_frame]
+                    self.image = self.idle_left[self.current_frame]
                     self.rect = self.image.get_rect()
                     self.rect.bottom = bottom
-            else:
-                self.current_frame = (self.current_frame + 1) % len(self.idle_left)
-                bottom = self.rect.bottom
-                self.image = self.idle_left[self.current_frame]
-                self.rect = self.image.get_rect()
-                self.rect.bottom = bottom
 
 
 
@@ -225,8 +205,6 @@ class Player(pg.sprite.Sprite):
         self.WallCollision('y')
 
         self.EnemyCollision()
-        self.ShootCollide()
-
 
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -361,6 +339,9 @@ class enemiesA(pg.sprite.Sprite):
                 self.rect = self.image.get_rect()
                 self.rect.bottom = bottom
 
+
+
+
         # Apply friction
         self.acc.x += self.vel.x * Player_Friction
         # Equations of motion
@@ -420,26 +401,15 @@ class enemiesB(pg.sprite.Sprite):
 
 
 class Arrow(pg.sprite.Sprite):
-    def __init__(self, player, x, y):
-        pg.sprite.Sprite.__init__(self)
-        self.direction = player.direction
-
-        self.image = pg.image.load('Pixel Art Trees\Archer\Arrow.png').convert()
-        self.image = pg.transform.scale(self.image, (20, 10))
-        self.image.set_colorkey(black)
+    def __init__(self, game, x, y):
+        self.groups = game.arrows, game.all_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.current_frame = 0
+        self.last_update = 0
+        self.load_images()
+        self.image = pg.Rect(x, y, 5, 2)
+        self.image.fill(red)
         self.rect = self.image.get_rect()
-        self.rect.bottom = y
-        self.rect.midtop = x
-        self.speed_x = 5
-        self.speed_y = 1
-
-    def update(self):
-        if self.direction == "Right":
-            self.rect.y += self.speed_y
-            self.rect.x += self.speed_x
-        else:
-            self.rect.y += self.speed_y
-            self.rect.x -= self.speed_x
-        # kill if it moves off the top of the screen
-        if self.rect.bottom > HEIGHT:
-            self.kill()
+        self.rect.x = x
+        self.rect.y = y
