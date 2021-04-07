@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.5.0" orientation="orthogonal" renderorder="right-down" width="1000" height="24" tilewidth="16" tileheight="16" infinite="0" nextlayerid="12" nextobjectid="27">
+<map version="1.5" tiledversion="1.5.0" orientation="orthogonal" renderorder="right-down" width="1000" height="24" tilewidth="16" tileheight="16" infinite="0" nextlayerid="12" nextobjectid="33">
  <tileset firstgid="1" source="Tileset.tsx"/>
  <tileset firstgid="49" source="ExampleTiles.tsx"/>
  <tileset firstgid="289" source="Decors.tsx"/>
@@ -127,5 +127,11 @@
   <object id="24" name="Wall" x="208" y="128" width="16" height="32"/>
   <object id="25" name="Wall" x="368" y="96" width="16" height="32"/>
   <object id="26" name="Wall" x="368" y="96" width="432" height="16"/>
+  <object id="27" name="EnemyB" x="464" y="64" width="16" height="16"/>
+  <object id="28" name="Enemy Wall" x="400" y="64" width="16" height="16"/>
+  <object id="29" name="Enemy Wall" x="560" y="64" width="16" height="16"/>
+  <object id="30" name="Coin" x="624" y="80" width="16" height="16"/>
+  <object id="31" name="Coin" x="672" y="80" width="16" height="16"/>
+  <object id="32" name="Coin" x="176" y="144" width="16" height="16"/>
  </objectgroup>
 </map>

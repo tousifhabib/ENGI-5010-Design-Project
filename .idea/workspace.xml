@@ -60,10 +60,45 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3177c90e-0503-40ed-9a4b-8c795b39d906" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/ENGI-5010-Design-Project.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CuteTree.tmx" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/GameEngineTiled.py" beforeDir="false" afterPath="$PROJECT_DIR$/GameEngineTiled.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pixel Art Trees.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pixel Art Trees/Slimes/LICENSE.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Pixel Art Trees/Slimes/LICENSE.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SettingsTiled.py" beforeDir="false" afterPath="$PROJECT_DIR$/SettingsTiled.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SpritesTiled.py" beforeDir="false" afterPath="$PROJECT_DIR$/SpritesTiled.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/Flying enemy.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Working on Tile Maps.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Working on Tile Maps/BG1.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/Working on Tile Maps/BG1.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Working on Tile Maps/BG2.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/Working on Tile Maps/BG2.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Working on Tile Maps/BG3.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/Working on Tile Maps/BG3.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Working on Tile Maps/CuteTree.tmx" beforeDir="false" afterPath="$PROJECT_DIR$/Working on Tile Maps/CuteTree.tmx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Working on Tile Maps/Decors.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/Working on Tile Maps/Decors.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Working on Tile Maps/ExampleTiles.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/Working on Tile Maps/ExampleTiles.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Working on Tile Maps/Tileset.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/Working on Tile Maps/Tileset.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/GameEngine.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/img/Background.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/img/Grasstop.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/img/LittleBadGuy.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/img/background_img.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/img/sprite.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/img/sprite.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/img/spritesheet-2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/img/spritesheet-3.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/Background.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/Grasstop.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/LittleBadGuy.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/background_img.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/sprite.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/sprite.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/spritesheet-2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/spritesheet-3.json" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -94,7 +129,7 @@
   <component name="RunManager">
     <configuration name="GameEngineTiled" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="ENGI-5010-Design-Project" />
-      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="INTERPRETER_OPTIONS" value="pyinstaller --onefile -w GameEngine.py" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />

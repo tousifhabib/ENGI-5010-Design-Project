@@ -28,7 +28,9 @@ class Player(pg.sprite.Sprite):
         self.direction = "Right"
         self.last_update = 0
         self.current_frame = 0
-        self.invulnerable = 0
+        self.arrow_loop = 0
+        self.cooldown = 0
+        self.living = True
         self.load_images()
 
 
@@ -68,7 +70,7 @@ class Player(pg.sprite.Sprite):
 
         self.idle_left = [
             pg.transform.flip(pg.transform.smoothscale(self.game.player_running_spritesheet.get_image(22, 16, 28, 37), (42, 56)), True, False),
-            pg.transform.flip(pg.transform.smoothscale(self.game.player_running_spritesheet.get_image(86, 15, 28, 38), (42, 56)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_running_spritesheet.get_image(86, 15, 28, 38), (42, 57)), True, False),
         ]
         for image in self.idle_left:
             image.set_colorkey(black)
@@ -80,17 +82,205 @@ class Player(pg.sprite.Sprite):
             pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(216, 11, 25, 42), (38, 63)),
             pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(280, 6, 25, 47), (38, 71)),
             pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(344, 11, 33, 42), (50, 63)),
-            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(408, 11, 28, 42), (42, 63)),
+            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(408, 11, 28, 42), (42, 63)),  
             pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(472, 11, 25, 42), (38, 63)),
             pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(24, 75, 25, 42), (38, 63)),
             pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(88, 75, 25, 42), (38, 63)),
-            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(1152, 80, 27, 37), (41, 56)),
         ]
         for image in self.single_arrow:
             image.set_colorkey(black)
 
+        self.single_arrow_L = [
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(22, 16, 28, 37), (42, 56)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(88, 16, 27, 37), (41, 56)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(152, 11, 25, 42), (38, 63)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(216, 11, 25, 42), (38, 63)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(280, 6, 25, 47), (38, 71)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(344, 11, 33, 42), (50, 63)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(408, 11, 28, 42), (42, 63)),  True, False), 
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(472, 11, 25, 42), (38, 63)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(24, 75, 25, 42), (38, 63)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(88, 75, 25, 42), (38, 63)), True, False),
+        ]
+        for image in self.single_arrow_L:
+            image.set_colorkey(black)
+
+        self.held_arrow = [
+            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(216, 11, 25, 42), (38, 63)),
+            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(280, 6, 25, 47), (38, 71)),
+            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(344, 11, 33, 42), (50, 63)),
+            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(408, 11, 28, 42), (42, 63)),
+            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(472, 11, 25, 42), (38, 63)),
+            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(24, 75, 25, 42), (38, 63)),
+            pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(88, 75, 25, 42), (38, 63)),
+        ]
+        for image in self.held_arrow:
+            image.set_colorkey(black)
+
+        self.held_arrow_L = [
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(216, 11, 25, 42), (38, 63)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(280, 6, 25, 47), (38, 71)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(344, 11, 33, 42), (50, 63)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(408, 11, 28, 42), (42, 63)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(472, 11, 25, 42), (38, 63)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(24, 75, 25, 42), (38, 63)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_firing_spritesheet.get_image(88, 75, 25, 42), (38, 63)), True, False),
+        ]
+        for image in self.held_arrow_L:
+            image.set_colorkey(black)
+
+        self.high_single_arrow = [
+            pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(22, 80, 28, 37), (42, 56)),
+            pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(88, 80, 27, 37), (41, 56)),
+            pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(152, 75, 25, 42), (38, 63)),
+            pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(215, 75, 27, 41), (41, 62)),
+            pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(280, 74, 26, 43), (39, 65)),
+            pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(343, 70, 27, 47), (41, 71)),
+            pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(407, 74, 30, 43), (45, 65)),  
+            pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(471, 74, 27, 43), (41, 65)),
+            pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(23, 138, 26, 43), (39, 65)),
+            pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(87, 138, 27, 43), (41, 65)),
+            pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(151, 140, 27, 41), (41, 62)),
+        ]
+        for image in self.high_single_arrow:
+            image.set_colorkey(black)
+
+        self.high_single_arrow_L = [
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(22, 80, 28, 37), (42, 56)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(88, 80, 27, 37), (41, 56)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(152, 75, 25, 42), (38, 63)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(215, 75, 27, 41), (41, 62)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(280, 74, 26, 43), (39, 65)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(343, 70, 27, 47), (41, 71)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(407, 74, 30, 43), (45, 65)),  True, False), 
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(471, 74, 27, 43), (41, 65)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(23, 138, 26, 43), (39, 65)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(87, 138, 27, 43), (41, 65)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(151, 140, 27, 41), (41, 62)), True, False),
+        ]
+        for image in self.high_single_arrow_L:
+            image.set_colorkey(black)
+
+        self.high_held_arrow = [
+            pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(280, 74, 26, 43), (39, 65)),
+            pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(343, 70, 27, 47), (41, 71)),
+            pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(407, 74, 30, 43), (45, 65)),  
+            pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(471, 74, 27, 43), (41, 65)),
+            pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(23, 138, 26, 43), (39, 65)),
+            pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(87, 138, 27, 43), (41, 65)),
+            pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(151, 140, 27, 41), (41, 62)),
+        ]
+        for image in self.high_held_arrow:
+            image.set_colorkey(black)
+
+        self.high_held_arrow_L = [
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(280, 74, 26, 43), (39, 65)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(343, 70, 27, 47), (41, 71)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(407, 74, 30, 43), (45, 65)),   True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(471, 74, 27, 43), (41, 65)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(23, 138, 26, 43), (39, 65)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(87, 138, 27, 43), (41, 65)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_high_firing_spritesheet.get_image(151, 140, 27, 41), (41, 62)), True, False),
+        ]
+        for image in self.high_held_arrow_L:
+            image.set_colorkey(black)
 
 
+
+
+
+
+
+
+
+
+            self.low_single_arrow = [
+            pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(22, 208, 28, 37), (42, 56)),
+            pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(85, 212, 28, 33), (42, 50)),
+            pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(149, 214, 28, 31), (42, 47)),
+            pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(215, 214, 27, 31), (41, 47)),
+            pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(279, 209, 25, 36), (38, 54)),
+            pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(343, 209, 25, 36), (38, 54)),
+            pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(407, 204, 25, 41), (38, 62)),  
+            pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(471, 209, 33, 36), (50, 54)),
+            pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(23, 273, 28, 36), (42, 54)),
+            pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(87, 273, 25, 36), (38, 54)),
+            pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(151, 273, 25, 36), (38, 54)),
+            pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(215, 273, 25, 36), (38, 54)),
+        ]
+        for image in self.low_single_arrow:
+            image.set_colorkey(black)
+
+        self.low_single_arrow_L = [
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(22, 208, 28, 37), (42, 56)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(85, 212, 28, 33), (42, 50)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(149, 214, 28, 31), (42, 47)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(215, 214, 27, 31), (41, 47)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(279, 209, 25, 36), (38, 54)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(343, 209, 25, 36), (38, 54)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(407, 204, 25, 41), (38, 62)),  True, False), 
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(471, 209, 33, 36), (50, 54)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(23, 273, 28, 36), (42, 54)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(87, 273, 25, 36), (38, 54)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(151, 273, 25, 36), (38, 54)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(215, 273, 25, 36), (38, 54)), True, False),
+        ]
+        for image in self.low_single_arrow_L:
+            image.set_colorkey(black)
+
+        self.low_held_arrow = [
+            pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(343, 209, 25, 36), (38, 54)),
+            pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(407, 204, 25, 41), (38, 62)),  
+            pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(471, 209, 33, 36), (50, 54)),
+            pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(23, 273, 28, 36), (42, 54)),
+            pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(87, 273, 25, 36), (38, 54)),
+            pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(151, 273, 25, 36), (38, 54)),
+            pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(215, 273, 25, 36), (38, 54)),
+        ]
+        for image in self.low_held_arrow:
+            image.set_colorkey(black)
+
+        self.low_held_arrow_L = [
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(343, 209, 25, 36), (38, 54)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(407, 204, 25, 41), (38, 62)),  True, False), 
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(471, 209, 33, 36), (50, 54)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(23, 273, 28, 36), (42, 54)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(87, 273, 25, 36), (38, 54)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(151, 273, 25, 36), (38, 54)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_low_firing_spritesheet.get_image(215, 273, 25, 36), (38, 54)), True, False),
+        ]
+        for image in self.low_held_arrow_L:
+            image.set_colorkey(black)
+
+        self.dying = [
+            pg.transform.smoothscale(self.game.player_death_spritesheet.get_image(22, 80, 28, 37), (42, 56)),
+            pg.transform.smoothscale(self.game.player_death_spritesheet.get_image(85, 84, 28, 33), (42, 50)),  
+            pg.transform.smoothscale(self.game.player_death_spritesheet.get_image(149, 86, 28, 31), (42, 47)),
+            pg.transform.smoothscale(self.game.player_death_spritesheet.get_image(213, 86, 28, 31), (42, 47)),
+            pg.transform.smoothscale(self.game.player_death_spritesheet.get_image(276, 87, 28, 31), (42, 47)),
+            pg.transform.smoothscale(self.game.player_death_spritesheet.get_image(340, 87, 28, 31), (42, 47)),
+            pg.transform.smoothscale(self.game.player_death_spritesheet.get_image(404, 89, 29, 28), (44, 42)),
+            pg.transform.smoothscale(self.game.player_death_spritesheet.get_image(466, 102, 37, 15), (56, 23)),
+            pg.transform.smoothscale(self.game.player_death_spritesheet.get_image(17, 168, 42, 13), (63, 20)),
+            pg.transform.smoothscale(self.game.player_death_spritesheet.get_image(81, 170, 42, 11), (63, 17)),
+        ]
+        for image in self.dying:
+            image.set_colorkey(black)
+
+        self.dying_L = [
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_death_spritesheet.get_image(22, 80, 28, 37), (42, 56)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_death_spritesheet.get_image(85, 84, 28, 33), (42, 50)),  True, False), 
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_death_spritesheet.get_image(149, 86, 28, 31), (42, 47)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_death_spritesheet.get_image(213, 86, 28, 31), (42, 47)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_death_spritesheet.get_image(276, 87, 28, 31), (42, 47)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_death_spritesheet.get_image(340, 87, 28, 31), (42, 47)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_death_spritesheet.get_image(404, 89, 29, 28), (44, 42)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_death_spritesheet.get_image(466, 102, 37, 15), (56, 23)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_death_spritesheet.get_image(17, 168, 42, 13), (63, 20)), True, False),
+            pg.transform.flip(pg.transform.smoothscale(self.game.player_death_spritesheet.get_image(81, 170, 42, 11), (63, 17)), True, False),
+        ]
+        for image in self.dying_L:
+            image.set_colorkey(black)
 
     def jump(self):
         self.rect.y += 1
@@ -108,7 +298,23 @@ class Player(pg.sprite.Sprite):
                 self.game.score += self.game.multiplier*50
                 self.game.multiplier *= 2
             else:
-                self.game.playing = False
+                self.living = False
+        collision = pg.sprite.spritecollide(self, self.game.enemiesB, False)
+        if collision:
+            if self.vel.y > 1:
+                self.vel.y = -5
+                collision[0].kill()
+                self.game.score += self.game.multiplier*100
+                self.game.multiplier *= 2
+            else:
+                self.living = False
+
+
+    def CoinCollision(self):
+        collision = pg.sprite.spritecollide(self, self.game.coins, True)
+        if collision:
+            self.game.score += 25
+
 
     def WallCollision(self, direction):
         if direction == 'x':
@@ -133,88 +339,265 @@ class Player(pg.sprite.Sprite):
                 self.rect.y = self.pos.y
                 self.game.multiplier = 1
 
-    def shoot(self):
-        self.arrow = Arrow(self, self.rect.midtop, self.rect.bottom)
+    def shoot(self, high, low):
+        self.arrow = Arrow(self, self.rect.x, self.rect.y + 10, high, low)
         self.game.all_sprites.add(self.arrow)
         self.game.arrows.add(self.arrow)
 
     def ShootCollide(self):
-        pg.sprite.groupcollide(self.game.arrows, self.game.enemiesA, True, True)
+        collision = pg.sprite.groupcollide(self.game.arrows, self.game.enemiesA, True, True)
+        if collision:
+            self.game.score += 100
+        collision = pg.sprite.groupcollide(self.game.arrows, self.game.enemiesB, True, True)
+        if collision:
+            self.game.score += 250
         pg.sprite.groupcollide(self.game.arrows, self.game.walls, True, False)
 
     def update(self):
         now = pg.time.get_ticks()
-        self.acc.x = 0
-        self.acc.y = Player_Gravity
-        
-        keys = pg.key.get_pressed()
-
-        if keys[pg.K_LEFT]:
-            self.acc.x = -Player_Acceleration
-            self.direction = "Left"
-            if now - self.last_update > 100:
-                self.last_update = now
-                self.current_frame = (self.current_frame + 1) % len(self.moving_left)
-                bottom = self.rect.bottom
-                self.image = self.moving_left[self.current_frame]
-                self.rect = self.image.get_rect()
-                self.rect.bottom = bottom
+        if self.living:
+            self.acc.x = 0
+            self.acc.y = Player_Gravity
             
-        if keys[pg.K_RIGHT]:
-            self.acc.x = Player_Acceleration
-            self.direction = "Right"
-            if now - self.last_update > 100:
-                self.last_update = now
-                self.current_frame = (self.current_frame + 1) % len(self.moving_right)
-                bottom = self.rect.bottom
-                self.image = self.moving_right[self.current_frame]
-                self.rect = self.image.get_rect()
-                self.rect.bottom = bottom
+            keys = pg.key.get_pressed()
 
-        if keys[pg.K_SPACE]:
-            if now - self.last_update > 100:
-                self.last_update = now
-                self.current_frame = (self.current_frame + 1) % len(self.single_arrow)
-                bottom = self.rect.bottom
-                self.image = self.single_arrow[self.current_frame]
-                self.rect = self.image.get_rect()
-                self.rect.bottom = bottom
+            if keys[pg.K_SPACE]:
+                keys = pg.key.get_pressed()
+                if keys[pg.K_RIGHT]:
+                    self.direction = "Right"
+                if keys[pg.K_LEFT]:
+                    self.direction = "Left"
+                if now - self.last_update > 150:
+                    self.last_update = now
+                    if self.direction == "Right":
+                        if self.arrow_loop == 0:
+                            self.current_frame = (self.current_frame + 1) % len(self.single_arrow)
+                            if (self.current_frame + 1) % (len(self.single_arrow)) == 9:
+                                self.shoot(False, False)
+                                self.arrow_loop = 1
+                                self.current_frame = 0
+                            self.image = self.single_arrow[self.current_frame]
+                        if self.arrow_loop == 1:
+                            self.current_frame = (self.current_frame + 1) % len(self.held_arrow)
+                            if (self.current_frame + 1) %  len(self.held_arrow) == 6:
+                                self.shoot(False, False)
+                            self.image = self.held_arrow[self.current_frame]
+                    else:
+                        if self.arrow_loop == 0:
+                            self.current_frame = (self.current_frame + 1) % len(self.single_arrow_L)
+                            if (self.current_frame + 1) % (len(self.single_arrow_L)) == 9:
+                                self.shoot(False, False)
+                                self.arrow_loop = 1
+                                self.current_frame = 0
+                            self.image = self.single_arrow_L[self.current_frame]
+                        else:
+                            self.current_frame = (self.current_frame + 1) % len(self.held_arrow_L)
+                            if (self.current_frame + 1) %  len(self.held_arrow_L) == 6:
+                                self.shoot(False, False)
+                            self.image = self.held_arrow_L[self.current_frame]
 
-        else: 
-            if now - self.last_update > 250:
-                self.last_update = now
-                if self.direction == "Right":
+
+                    bottom = self.rect.bottom
+                    self.rect = self.image.get_rect()
+                    self.rect.bottom = bottom
+
+
+            elif keys[pg.K_r]:
+                keys = pg.key.get_pressed()
+                if keys[pg.K_RIGHT]:
+                    self.direction = "Right"
+                if keys[pg.K_LEFT]:
+                    self.direction = "Left"
+                if now - self.last_update > 150:
+                    self.last_update = now
+                    if self.direction == "Right":
+                        if self.arrow_loop == 0:
+                            self.current_frame = (self.current_frame + 1) % len(self.high_single_arrow)
+                            if (self.current_frame + 1) % (len(self.high_single_arrow)) == 10:
+                                self.shoot(True, False)
+                                self.arrow_loop = 1
+                                self.current_frame = 0
+                            self.image = self.high_single_arrow[self.current_frame]
+                        if self.arrow_loop == 1:
+                            self.current_frame = (self.current_frame + 1) % len(self.high_held_arrow)
+                            if (self.current_frame + 1) %  len(self.high_held_arrow) == 6:
+                                self.shoot(True, False)
+                            self.image = self.high_held_arrow[self.current_frame]
+                    else:
+                        if self.arrow_loop == 0:
+                            self.current_frame = (self.current_frame + 1) % len(self.high_single_arrow_L)
+                            if (self.current_frame + 1) % (len(self.high_single_arrow_L)) == 10:
+                                self.shoot(True, False)
+                                self.arrow_loop = 1
+                                self.current_frame = 0
+                            self.image = self.high_single_arrow_L[self.current_frame]
+                        else:
+                            self.current_frame = (self.current_frame + 1) % len(self.high_held_arrow_L)
+                            if (self.current_frame + 1) %  len(self.high_held_arrow_L) == 6:
+                                self.shoot(True, False)
+                            self.image = self.high_held_arrow_L[self.current_frame]
+
+
+                    bottom = self.rect.bottom
+                    self.rect = self.image.get_rect()
+                    self.rect.bottom = bottom
+
+            elif keys[pg.K_t]:
+                keys = pg.key.get_pressed()
+                if keys[pg.K_RIGHT]:
+                    self.direction = "Right"
+                if keys[pg.K_LEFT]:
+                    self.direction = "Left"
+                if now - self.last_update > 150:
+                    self.last_update = now
+                    if self.direction == "Right":
+                        if self.arrow_loop == 0:
+                            self.current_frame = (self.current_frame + 1) % len(self.low_single_arrow)
+                            if (self.current_frame + 1) % (len(self.low_single_arrow)) == 11:
+                                self.shoot(False, True)
+                                self.arrow_loop = 1
+                                self.current_frame = 0
+                            self.image = self.low_single_arrow[self.current_frame]
+                        if self.arrow_loop == 1:
+                            self.current_frame = (self.current_frame + 1) % len(self.low_held_arrow)
+                            if (self.current_frame + 1) %  len(self.low_held_arrow) == 6:
+                                self.shoot(False, True)
+                            self.image = self.low_held_arrow[self.current_frame]
+                    else:
+                        if self.arrow_loop == 0:
+                            self.current_frame = (self.current_frame + 1) % len(self.low_single_arrow_L)
+                            if (self.current_frame + 1) % (len(self.low_single_arrow_L)) == 11:
+                                self.shoot(False, True)
+                                self.arrow_loop = 1
+                                self.current_frame = 0
+                            self.image = self.low_single_arrow_L[self.current_frame]
+                        else:
+                            self.current_frame = (self.current_frame + 1) % len(self.low_held_arrow_L)
+                            if (self.current_frame + 1) %  len(self.low_held_arrow_L) == 6:
+                                self.shoot(False, True)
+                            self.image = self.low_held_arrow_L[self.current_frame]
+
+
+                    bottom = self.rect.bottom
+                    self.rect = self.image.get_rect()
+                    self.rect.bottom = bottom
+
+            elif keys[pg.K_LEFT]:
+                self.acc.x = -Player_Acceleration
+                self.direction = "Left"
+                self.arrow_loop = 0 
+                if now - self.last_update > 100:
+                    self.last_update = now
+                    self.current_frame = (self.current_frame + 1) % len(self.moving_left)
+                    bottom = self.rect.bottom
+                    self.image = self.moving_left[self.current_frame]
+                    self.rect = self.image.get_rect()
+                    self.rect.bottom = bottom
+                
+            elif keys[pg.K_RIGHT]:
+                self.acc.x = Player_Acceleration
+                self.direction = "Right"
+                self.arrow_loop = 0 
+                if now - self.last_update > 100:
+                    self.last_update = now
+                    self.current_frame = (self.current_frame + 1) % len(self.moving_right)
+                    bottom = self.rect.bottom
+                    self.image = self.moving_right[self.current_frame]
+                    self.rect = self.image.get_rect()
+                    self.rect.bottom = bottom
+
+            else:
+                self.arrow_loop = 0 
+                if now - self.last_update > 250:
+                    self.last_update = now
+                    if self.direction == "Right":
                         self.current_frame = (self.current_frame + 1) % len(self.idle_right)
                         bottom = self.rect.bottom
                         self.image = self.idle_right[self.current_frame]
                         self.rect = self.image.get_rect()
                         self.rect.bottom = bottom
-                else:
-                    self.current_frame = (self.current_frame + 1) % len(self.idle_left)
+                    else:
+                        self.current_frame = (self.current_frame + 1) % len(self.idle_left)
+                        bottom = self.rect.bottom
+                        self.image = self.idle_left[self.current_frame]
+                        self.rect = self.image.get_rect()
+                        self.rect.bottom = bottom
+
+
+
+            # Apply friction
+            self.acc.x += self.vel.x * Player_Friction
+            # Equations of motion
+            self.vel.x += self.acc.x
+            self.pos.x += self.vel.x + 0.5 * self.acc.x
+            self.rect.x = self.pos.x
+            self.WallCollision('x')
+
+
+            # Equations of motion
+            self.vel.y += self.acc.y
+            self.pos.y += self.vel.y + 0.5 * self.acc.y
+            self.rect.y = self.pos.y
+            self.WallCollision('y')
+
+            self.EnemyCollision()
+            self.CoinCollision()
+            self.ShootCollide()
+        else:
+            self.acc.x = 0
+            self.acc.y = Player_Gravity
+
+            if now - self.last_update > 150:
+                self.last_update = now
+                if self.direction == "Right":
+                    self.current_frame = (self.current_frame + 1) % len(self.dying)
                     bottom = self.rect.bottom
-                    self.image = self.idle_left[self.current_frame]
+                    self.image = self.dying[self.current_frame]
                     self.rect = self.image.get_rect()
                     self.rect.bottom = bottom
+                    if (self.current_frame + 1) % len(self.dying) == 9:
+                        self.current_frame = (self.current_frame + 1) % len(self.dying)
+                        bottom = self.rect.bottom
+                        self.image = self.dying[self.current_frame]
+                        self.rect = self.image.get_rect()
+                        self.rect.bottom = bottom
+                        self.game.playing = False
+                else:
+                    self.current_frame = (self.current_frame + 1) % len(self.dying_L)
+                    bottom = self.rect.bottom
+                    self.image = self.dying_L[self.current_frame]
+                    self.rect = self.image.get_rect()
+                    self.rect.bottom = bottom
+                    if (self.current_frame + 1) % len(self.dying) == 9:
+                        self.current_frame = (self.current_frame + 1) % len(self.dying_L)
+                        bottom = self.rect.bottom
+                        self.image = self.dying_L[self.current_frame]
+                        self.rect = self.image.get_rect()
+                        self.rect.bottom = bottom
+                        self.game.playing = False
+
+                if (self.current_frame + 1) % len(self.dying) == 9:
+                    self.game.playing = False
+                
+                # Apply friction
+                self.acc.x += self.vel.x * Player_Friction
+                # Equations of motion
+                self.vel.x += self.acc.x
+                self.pos.x += self.vel.x + 0.5 * self.acc.x
+                self.rect.x = self.pos.x
+                #self.WallCollision('x')
 
 
+                # Equations of motion
+                self.vel.y += self.acc.y
+                self.pos.y += self.vel.y + 0.5 * self.acc.y
+                self.rect.y = self.pos.y
+                #self.WallCollision('y')
 
-        # Apply friction
-        self.acc.x += self.vel.x * Player_Friction
-        # Equations of motion
-        self.vel.x += self.acc.x
-        self.pos.x += self.vel.x + 0.5 * self.acc.x
-        self.rect.x = self.pos.x
-        self.WallCollision('x')
+                #self.EnemyCollision()
+                #self.ShootCollide()
 
 
-        # Equations of motion
-        self.vel.y += self.acc.y
-        self.pos.y += self.vel.y + 0.5 * self.acc.y
-        self.rect.y = self.pos.y
-        self.WallCollision('y')
-
-        self.EnemyCollision()
-        self.ShootCollide()
 
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -260,7 +643,7 @@ class enemiesA(pg.sprite.Sprite):
         self.current_frame = 0
         self.last_update = 0
         self.load_images()
-        self.image = self.game.enemy_spritesheet.get_image(8, 8, 16, 16)
+        self.image = self.game.enemyA_spritesheet.get_image(8, 8, 16, 16)
         self.image.set_colorkey(black)
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -274,19 +657,19 @@ class enemiesA(pg.sprite.Sprite):
 
     def load_images(self):
         self.moving_left = [
-            pg.transform.smoothscale(self.game.enemy_spritesheet.get_image(8, 104, 16, 12), (32, 24)),
-            pg.transform.smoothscale(self.game.enemy_spritesheet.get_image(40, 104, 16, 12), (32, 24)),
-            pg.transform.smoothscale(self.game.enemy_spritesheet.get_image(72, 104, 16, 12), (32, 24)),
-            pg.transform.smoothscale(self.game.enemy_spritesheet.get_image(104, 104, 16, 12), (32, 24)),
+            pg.transform.smoothscale(self.game.enemyA_spritesheet.get_image(8, 104, 16, 12), (32, 24)),
+            pg.transform.smoothscale(self.game.enemyA_spritesheet.get_image(40, 104, 16, 12), (32, 24)),
+            pg.transform.smoothscale(self.game.enemyA_spritesheet.get_image(72, 104, 16, 12), (32, 24)),
+            pg.transform.smoothscale(self.game.enemyA_spritesheet.get_image(104, 104, 16, 12), (32, 24)),
         ]
         for image in self.moving_left:
             image.set_colorkey(black)
 
         self.moving_right = [
-            pg.transform.smoothscale(self.game.enemy_spritesheet.get_image(8, 40, 16, 12), (32, 24)),
-            pg.transform.smoothscale(self.game.enemy_spritesheet.get_image(40, 40, 16, 12), (32, 24)),
-            pg.transform.smoothscale(self.game.enemy_spritesheet.get_image(72, 40, 16, 12), (32, 24)),
-            pg.transform.smoothscale(self.game.enemy_spritesheet.get_image(104, 40, 16, 12), (32, 24)),
+            pg.transform.smoothscale(self.game.enemyA_spritesheet.get_image(8, 40, 16, 12), (32, 24)),
+            pg.transform.smoothscale(self.game.enemyA_spritesheet.get_image(40, 40, 16, 12), (32, 24)),
+            pg.transform.smoothscale(self.game.enemyA_spritesheet.get_image(72, 40, 16, 12), (32, 24)),
+            pg.transform.smoothscale(self.game.enemyA_spritesheet.get_image(104, 40, 16, 12), (32, 24)),
         ]
         for image in self.moving_right:
             image.set_colorkey(black)
@@ -331,7 +714,7 @@ class enemiesA(pg.sprite.Sprite):
         now = pg.time.get_ticks()
 
         self.acc.y = Player_Gravity
-        self.acc.x = Player_Acceleration / 6 * self.direction
+        self.acc.x = Player_Acceleration / 6 * self.direction * self.game.enemyMod
 
         if now - self.last_update > 250:
             if self.direction < 0:
@@ -370,48 +753,104 @@ class enemiesA(pg.sprite.Sprite):
         self.EnemyCollision()
 
 class enemiesB(pg.sprite.Sprite):
-    def __init__(self, x, y, Game):
-        pg.sprite.Sprite.__init__(self)
-        self.Game = Game
-        self.image = pg.surface.fill(red)
-        self.image = pg.transform.scale(self.image, (40, 40))
-        self.image.set_colorkey(red)
+    def __init__(self, game, x, y):
+        self.groups = game.enemiesB, game.all_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.current_frame = 0
+        self.last_update = 0
+        self.load_images()
+        self.image = self.game.enemyB_spritesheet.get_image(8, 8, 16, 16)
+        self.image.set_colorkey(black)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        self.direction = -1
+        self.platform = []
 
-        self.velocity = vector(0, 0)
-        self.acceleration = vector(0, 0)
-        self.position = vector(x, y)
-        self.turntracker = 0
-        self.switchDirection = 0
+        self.vel = vector(0, 0)
+        self.acc = vector(0, 0)
+        self.pos = vector(x, y)
+
+
+    def load_images(self):
+        self.moving_right = [
+            pg.transform.smoothscale(self.game.enemyB_spritesheet.get_image(41, 33, 17, 21), (26, 32)),
+            pg.transform.smoothscale(self.game.enemyB_spritesheet.get_image(73, 38, 17, 15), (26, 23)),
+            pg.transform.smoothscale(self.game.enemyB_spritesheet.get_image(107, 38, 15, 21), (23, 32)),
+        ]
+        for image in self.moving_right:
+            image.set_colorkey(black)
+
+        self.moving_left = [
+            pg.transform.smoothscale(self.game.enemyB_spritesheet.get_image(38, 97, 17, 21), (26, 32)),
+            pg.transform.smoothscale(self.game.enemyB_spritesheet.get_image(70, 102, 17, 15), (26, 23)),
+            pg.transform.smoothscale(self.game.enemyB_spritesheet.get_image(102, 102, 15, 21), (23, 32)),
+        ]
+        for image in self.moving_left:
+            image.set_colorkey(black)
+
+
+
+    def WallCollision(self, direction):
+        if direction == 'x':
+            collision = pg.sprite.spritecollide(self, self.game.enemy_walls, False)
+            if collision:
+                if self.vel.x > 0:
+                    self.pos.x = collision[0].rect.left - self.rect.width
+                if self.vel.x < 0:
+                    self.pos.x = collision[0].rect.right
+                self.direction *= -1
+                self.rect.x = self.pos.x
+
+        elif direction == 'y':
+            collision = pg.sprite.spritecollide(self, self.game.enemy_walls, False)
+            if collision:
+                if self.vel.y > 0:
+                    self.pos.y = collision[0].rect.top - self.rect.height
+                if self.vel.y < 0:
+                    self.pos.y = collision[0].rect.bottom
+                self.vel.y = 0
+                self.acc.y = 0
+                self.rect.y = self.pos.y
+
 
     def update(self):
-        self.acceleration = vector(0, 0)
-        if self.turntracker >= 200:
-            self.switchDirection = 1
-        if self.turntracker <= 0:
-            self.switchDirection = 0
+        now = pg.time.get_ticks()
 
-        if self.switchDirection == 0:
-            self.acceleration.x = player_acceleration / 3
-        else:
-            self.acceleration.x = -player_acceleration / 3
+        self.acc.y = 0
+        self.acc.x = Player_Acceleration / 6 * self.direction * self.game.enemyMod
+
+        if now - self.last_update > 250:
+            if self.direction < 0:
+                self.last_update = now
+                self.current_frame = (self.current_frame + 1) % len(self.moving_left)
+                bottom = self.rect.bottom
+                self.image = self.moving_left[self.current_frame]
+                self.rect = self.image.get_rect()
+                self.rect.bottom = bottom
+            elif self.direction > 0:
+                self.last_update = now
+                self.current_frame = (self.current_frame + 1) % len(self.moving_right)
+                bottom = self.rect.bottom
+                self.image = self.moving_right[self.current_frame]
+                self.rect = self.image.get_rect()
+                self.rect.bottom = bottom
+
+
+
 
         # Apply friction
-        self.acceleration.x += self.velocity.x * player_friction
+        self.acc.x += self.vel.x * Player_Friction
         # Equations of motion
-        self.velocity += self.acceleration
-        if abs(self.velocity.x) < 0.1:
-            self.velocity.x = 0
-        self.position += self.velocity + 0.5 * self.acceleration
-        self.turntracker += self.velocity.x + 0.5 * self.acceleration.x
-
-        self.rect.midbottom = self.position
+        self.vel.x += self.acc.x
+        self.pos.x += self.vel.x + 0.5 * self.acc.x
+        self.rect.x = self.pos.x
+        self.WallCollision('x')
 
 
 class Arrow(pg.sprite.Sprite):
-    def __init__(self, player, x, y):
+    def __init__(self, player, x, y, high, low):
         pg.sprite.Sprite.__init__(self)
         self.direction = player.direction
 
@@ -419,18 +858,74 @@ class Arrow(pg.sprite.Sprite):
         self.image = pg.transform.scale(self.image, (20, 10))
         self.image.set_colorkey(black)
         self.rect = self.image.get_rect()
-        self.rect.bottom = y
-        self.rect.midtop = x
-        self.speed_x = 5
-        self.speed_y = 1
+        self.acc = vector(0, 0)
+        self.vel = vector(0, 0)
+        if low:
+            self.pos = vector(x + 25, y)
+        else:
+            self.pos = vector(x, y)
+        self.rect.y = y
+        self.rect.x = x
+
+        if self.direction == "Right" and high:
+            self.vel.x = 20
+        elif self.direction == "Left" and high:
+            self.vel.x = -20
+        elif self.direction == "Right":
+            self.vel.x = 20
+        else:
+            self.vel.x = -20
+
+        if high:
+            self.vel.y = -math.sqrt(60)
+        else:
+            self.vel.y = 0
 
     def update(self):
-        if self.direction == "Right":
-            self.rect.y += self.speed_y
-            self.rect.x += self.speed_x
-        else:
-            self.rect.y += self.speed_y
-            self.rect.x -= self.speed_x
+        self.acc.y = Player_Gravity
+
+        #self.vel.x += self.acc.x
+        self.pos.x += self.vel.x# + 0.5 * self.acc.x
+        self.rect.x = self.pos.x
+
+        self.vel.y += self.acc.y
+        self.pos.y += self.vel.y + 0.5 * self.acc.y
+        self.rect.y = self.pos.y
+
+        self.image = pg.transform.rotate(self.image, -math.tan(self.vel.y / self.vel.x))
+
         # kill if it moves off the top of the screen
         if self.rect.bottom > HEIGHT:
             self.kill()
+
+class Coin(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.coins, game.all_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.current_frame = 0
+        self.last_update = 0
+        self.load_images()
+        self.image = self.game.coin_spritesheet.get_image(1, 0, 14, 16)
+        self.image.set_colorkey(black)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+    def load_images(self):
+        self.coin = [
+            self.game.coin_spritesheet.get_image(1, 0, 14, 16),
+            self.game.coin_spritesheet.get_image(19, 0, 10, 16),
+            self.game.coin_spritesheet.get_image(37, 0, 6, 16),
+            self.game.coin_spritesheet.get_image(51, 0, 10, 16),
+            self.game.coin_spritesheet.get_image(65, 0, 13, 16),
+        ]
+        for image in self.coin:
+            image.set_colorkey(black)
+
+    def update(self):
+        now = pg.time.get_ticks()
+        if now - self.last_update > 100:
+            self.last_update = now
+            self.current_frame = (self.current_frame + 1) % len(self.coin)
+            self.image = self.coin[self.current_frame]
